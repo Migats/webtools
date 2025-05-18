@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>base64generator</title>
+</head>
+
+<body>
+<form>
+    <p>
+        <label for="text content">Place the UTF-8 text</label>
+        <br>
+        <textarea name="text content" id="text content" autofocus placeholder="UTF-8 text..." onInput="readwrite()"></textarea>
+    </p>
+    <p>
+        <label for="code content">See the base64 code</label>
+        <br>
+        <textarea name="code content" id="code content" placeholder="Base64 code..." onInput="invertedreadwrite()"></textarea>
+    </p>
+</form>
+<script>
+const ASCII = [
+	"\x00","\x01","\x02","\x03","\x04","\x05","\x06","\x07","\x08","\x09","\x0a","\x0b","\x0c","\x0d","\x0e","\x0f",
+	"\x10","\x11","\x12","\x13","\x14","\x15","\x16","\x17","\x18","\x19","\x1a","\x1b","\x1c","\x1d","\x1e","\x1f",
+	" ","!","\"","#","$","%","&","\'","(",")","*","+",",","-",".","/",
+	"0","1","2","3","4","5","6","7","8","9",":",";","<","=",">","?",
+	"@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O",
+	"P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_",
+	"`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o",
+	"p","q","r","s","t","u","v","w","x","y","z","{","|","}","~","\x7f",
+	"\xc7","\xfc","\xe9","\xe2","\xe4","\xe0","\xe5","\xe7","\xea","\xeb","\xe8","\xef","\xee","\xec","\xc4","\xc5",
+	"\xc9","\xe6","\xc6","\xf4","\xf6","\xf2","\xfb","\xf9","\xff","\xd6","\xdc","\xf8","\xa3","\xd8","\xd7","\u0192",
+	"\xe1","\xed","\xf3","\xfa","\xf1","\xd1","\xaa","\xba","\xbf","\xae","\xac","\xbd","\xbc","\xa1","\xab","\xbb",
+	"\u2591","\u2592","\u2593","\u2502","\u2524","\xc1","\xc2","\xc0","\xa9","\u2563","\u2551","\u2557","\u255d","\xa2","\xa5","\u2510",
+	"\u2514","\u2534","\u252c","\u251c","\u2500","\u253c","\xe3","\xc3","\u255a","\u2554","\u2569","\u2566","\u2560","\u2550","\u256c","\xa4",
+	"\xf0","\xd0","\xca","\xcb","\xc8","\u0131","\xcd","\xce","\xcf","\u2518","\u250c","\u2588","\u2584","\xa6","\xcc","\u2580",
+	"\xd3","\xdf","\xd4","\xd2","\xf5","\xd5","\xb5","\xfe","\xde","\xda","\xdb","\xd9","\xfd","\xdd","\xaf","\xb4","\xad","\u2261","\xb1","\u2017","\xbe","\xb6","\xa7","\xf7","\xb8","\xb0","\xa8","\xb7","\xb9","\xb3","\xb2","\u25a0","\xa0"
+];
+function checkNoCharset(string,charset) {
+	var _returnvalue = false;
+	for (var i = 0; i < string.length; i++) {
+		if (charset.indexOf(string.charAt(i)) == -1) {
+			_returnvalue = true;
+			break;
+		}
+	}
+	return _returnvalue;
+}
+function readwrite() {
+	try {
+		document.getElementById("code content").value = btoa(document.getElementById("text content").value);
+	} catch (err) {
+		if (checkNoCharset(document.getElementById("text content").value,ASCII)) {
+			document.getElementById("code content").value = "Char outside UTF-8";
+		} else {
+			document.getElementById("code content").value = err;
+		}
+	}
+}
+function invertedreadwrite() {
+	try {
+		document.getElementById("text content").value = atob(document.getElementById("code content").value);
+	} catch (err) {
+		if (document.getElementById("code content").value.length % 4 === 1) {
+			try {
+				var err = "";
+				document.getElementById("text content").value = atob(document.getElementById("code content").value.replace(/[A-Za-z0-9\+\/]={0,2}$/,""));
+			} catch (err2) {
+				err = err2;
+			}
+		}
+		if (!/^[A-Za-z0-9\+\/]+=*$/.test(document.getElementById("code content").value) || /Invalid\s?Character/i.test(err)) {
+			document.getElementById("text content").value = "Invalid base64 code";
+		} else {
+			document.getElementById("text content").value = err;
+		}
+	}
+}
+</script>
+</body>
+</html>

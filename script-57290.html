@@ -1,0 +1,40 @@
+<!doctype html>
+<!-- Tab tester -->
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+</head>
+
+<body>
+<div class="tab">
+    <h2 style="cursor: pointer" id="tabbtn">Run
+        <img src="images/Arrow_down.gif" style="vertical-align: middle" id="img" /> 
+    </h2>
+    <div id="tabcontent" style="display: none">
+        <p>Run javascript</p>
+    </div>
+    <script>
+		tabbase = document.querySelectorAll('.tab');
+		tabbase.btn = document.querySelectorAll('.tab #tabbtn');
+		tabbase.img = document.querySelectorAll('.tab img');
+		tabbase.content = document.querySelectorAll('.tab #tabcontent');
+		tabbase.visible = false;
+		for (var i in tabbase) {
+			tabbase[i].btn.onclick = function () {
+				if (tabbase[i].visible) {
+					tabbase[i].content.style.display = 'none';
+					tabbase[i].img.src = 'images/Arrow_down.gif';
+				} else {					
+					tabbase[i].content.style.display = 'block';
+					tabbase[i].img.src = 'images/Arrow_up.gif';
+				}
+			}
+		}
+	</script>
+</div>
+<div>
+
+</div>
+</body>
+</html>

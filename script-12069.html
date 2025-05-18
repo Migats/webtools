@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Video player</title>
+<script>
+var URL;
+URL.get = function (name) {
+		return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [null, ''])[1].replace(/\+/g, '%20')) || null;
+}
+window.onload = function () {
+	var paused, wscreen = document.getElementById('wscreen'), play = document.getElementById('play'), timeline = document.getElementById('currentTime');
+	setInterval(function () {if (wscreen.paused) {wscreen.currentTime = timeline.value} else {timeline.value = wscreen.currentTime}},1);
+	timeline.onmousedown = function () {
+		paused = wscreen.paused;
+		if (!paused) {
+			wscreen.pause();
+		}
+	}
+	timeline.onmouseup = function () {
+		if (!paused) {
+			wscreen.play();
+		}
+	}
+	if (URL.get("file") != null) {
+		wscreen.setAttribute("src",URL.get("file"));
+	} else if (URL.get('file1') != null) {
+		var i = 1, sources = [null];
+		while (URL.get('file' + i) != null) {
+			sources.push(document.createElement('source'));
+			sources[i].setAttribute('src',URL.get('file' + i));
+			if (URL.get('type' + i) != null) {
+				sources[i].setAttribute('type',URL.get('type' + i));
+			}
+			wscreen.appendChild(sources[i]);
+			i++;
+		}
+	} else {
+		alert("There is no file defined")
+		throw "There is no file defined";
+	}
+}
+</script>
+<style>
+	p,button {
+		margin: 0;
+	}
+	button {
+		border-radius: 0;
+		padding: 4px 8px;
+	}
+</style>
+</head>
+<body>
+<p>
+	<video id="wscreen" style="width: 100%; background-color: #000; z-index: -1"></video>
+</p>
+<p style="margin-top: -63px; text-align: center; z-index: 1">
+    <input type="range" id="currentTime" style="padding: 0" min="0" value="0" />
+	<svg width="16px" height="16px" viewBox="0,0,4,4"><path d="M0,0 l4,2 l-4,2 z" /></svg>
+</p>
+</body>
+</html>

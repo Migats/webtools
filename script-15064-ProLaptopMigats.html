@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="none">
+<head>
+<title>Glowclock</title>
+<style>
+	body {
+		/* cursor: none; */
+	}
+	
+	canvas {
+		position: fixed;
+		opacity: 0.875;
+		bottom: 50%;
+		right: 50%;
+		transform: translate(50%,50%);
+	}
+
+	#clock {
+		background-color: #00000028;
+		border-radius: 96px;
+		padding: 8px 32px;
+	}
+
+	body::before {
+		content: "";
+		display: inline-block;
+		width: 1600px;
+		height: 412px;
+		background-color: currentColor;
+		position: fixed;
+		bottom: 50%;
+		right: 50%;
+		transform: translate(50%,50%);
+		filter: blur(128px);
+	}
+
+	#newyears-countdown {
+		color: white;
+		position: fixed;
+		bottom: 50%;
+		right: 50%;
+		transform: translate(50%,50%);
+		font-family: fantasy;
+		text-shadow: #000000 0.125em 0.0625em 0.25em;
+		text-align: center;
+		text-wrap: nowrap;
+		font-size: 10vh;
+	}
+
+	#newyears-countdown.counting {
+		font-size: 60vh;
+		animation: shot 1s infinite, grow 25s ease-out;
+	}
+
+	#newyears-countdown:empty {
+		animation-play-state: paused;
+	}
+
+	#newyears-countdown.final {
+		animation: final 1s;
+		font-size: 27vh;
+		z-index: -1;
+	}
+
+	@keyframes grow {
+		from {
+			font-size: 20vh;
+		}
+		to {
+			font-size: 60vh;
+		}
+	}
+
+	@keyframes shot {
+		0% {
+			opacity: 0.0;
+			transform: translate(50%,50%) rotate(20deg) scale(0.5);
+		}
+		20% {
+			opacity: 0.5;
+			transform: translate(50%,50%) rotate(0deg) scale(1.0);
+		}
+		80% {
+			opacity: 0.5;
+			transform: translate(50%,50%) rotate(0deg) scale(1.0);
+		}
+		100% {
+			opacity: 0.0;
+			transform: translate(50%,50%) rotate(-20deg) scale(0.5);
+		}
+	}
+
+	@keyframes final {
+		0% {
+			opacity: 0.0;
+			transform: translate(50%,50%) rotate(20deg) scale(0.5);
+		}
+		20% {
+			opacity: 1.0;
+			transform: translate(50%,50%) rotate(0deg) scale(1.0);
+		}
+	}
+
+	@media all and (max-width: 1600px) {
+		#clock, body::before {
+			transform: scale(0.5) translate(100%,100%);
+		}
+	}
+
+	@media all and (max-width: 683px) {
+		#clock, body::before {
+			transform: scale(0.25) translate(200%,200%);
+		}
+	}
+
+	@media all and (min-width: 3072px) {
+		#clock, body::before {
+			transform: scale(2.0) translate(25%,25%);
+		}
+	}
+</style>
+<meta charset="utf-8" />
+</head>
+<body>
+<canvas id="particles"></canvas>
+<canvas id="clock" width="1560" height="400">!ERROR: This browser sucks! Get a better browser you FOOL!!!</canvas>
+<noscript>!ERROR: Program is running in sandbox. Please enable JavaScript and refresh. I promise nothing bad will happen.</noscript>
+<div id="newyears-countdown"></div>
+<script src="javascripts/color-ProLaptopMigats.js"></script>
+<script>
+const COUNTER = document.getElementById("newyears-countdown");
+const CLOCK_CONTEXT = document.getElementById("clock").getContext("2d");
+const PARTICLE_CONTEXT = document.getElementById("particles").getContext("2d");
+const BASE_COLOR = Color.fromRgba(255, 255, 255, 0.2);
+const DIGITS = new Uint8Array([119,36,94,110,45,107,123,38,127,111]); // Bitset for each segment
+const REQUEST_GET = new URLSearchParams(location.search);
+const SYNC_TIME = 415410 + (Number(REQUEST_GET.get("audio-delay")) || 0);
+const NEWYEARS_CLOCK_SONG = new Audio("others/newyearsclock%20full.wav");
+const NEWYEARS_TIME = new Date(new Date().getFullYear()+1, 0, 1).getTime();
+
+var color = Color.fromRgb(0,255,255);
+var newYearsMode = Date.now() > NEWYEARS_TIME - 21600000;
+var particleData = [];
+if (newYearsMode) document.title = "Newyears Clock - Counting for " + new Date().getFullYear()+1;
+if (window.top == window.self && location.hash != "#widget") {
+	document.body.style.backgroundColor = Color.BLACK;
+}
+document.body.style.color = color;
+PARTICLE_CONTEXT.canvas.width = window.innerWidth;
+PARTICLE_CONTEXT.canvas.height = window.innerHeight;
+requestAnimationFrame(render);
+
+function render() {
+	countDown(COUNTER);
+	CLOCK_CONTEXT.clearRect(0,0,CLOCK_CONTEXT.canvas.width,CLOCK_CONTEXT.canvas.height);
+	drawBase(CLOCK_CONTEXT);
+	drawTime(CLOCK_CONTEXT);
+	drawParticles(PARTICLE_CONTEXT);
+	if (newYearsMode && NEWYEARS_CLOCK_SONG.paused) {
+		playAudioInSync(NEWYEARS_CLOCK_SONG, COUNTER);
+	}
+	requestAnimationFrame(render);
+}
+
+function drawBase(ctx) {
+	ctx.fillStyle = BASE_COLOR;
+	for (let i=0;i<6;i++) {
+		drawDigit(ctx,8);
+		ctx.translate(234,0);
+		if (i & 1) {
+			ctx.fillRect(30,120,24,24);
+			ctx.fillRect(30,240,24,24);
+			ctx.translate(72,0);
+		}
+	}
+	ctx.setTransform(1,0,0,1,0,0);
+}
+
+function drawTime(ctx) {
+	let now = new Date(Math.min(Date.now(), NEWYEARS_TIME));
+	let digits = [Math.floor(now.getHours() / 10),now.getHours() % 10,Math.floor(now.getMinutes() / 10),now.getMinutes() % 10,Math.floor(now.getSeconds() / 10),now.getSeconds() % 10,now.getMilliseconds()];
+	ctx.fillStyle = color.linearTo(Color.WHITE, 0.65);
+	for (let i=0;i<6;i++) {
+		drawDigit(ctx,digits[i]);
+		ctx.translate(234,0);
+		if (i & 1) {
+			if (digits[6] % 1000 < 500) {
+				ctx.fillRect(30,120,24,24);
+				ctx.fillRect(30,240,24,24);
+			}
+			ctx.translate(72,0);
+		}
+	}
+	ctx.setTransform(1,0,0,1,0,0);
+	ctx.fillStyle = "#ffffffa5";
+}
+
+function countDown(ctr) {
+	let count = NEWYEARS_TIME - Date.now();
+	if (newYearsMode) {
+		if (count <= 0) {
+			color = Color.fromRgb(255,204,0);
+			document.body.style.color = color;
+			newYearsMode = false;
+			ctr.innerHTML = "Happy " + new Date().getFullYear() + "!";
+			ctr.className = "final";
+			document.title = "Newyears Clock - " + ctr.innerHTML;
+		} else if (count <= 60000) {
+			color.green = (count - 1000)*255/59000;
+			if (count <= 30000) {
+				ctr.innerHTML = Math.ceil(count / 1000);
+				if (count <= 1000) {
+					color.blue = count *0.255;
+				}
+			}
+			document.body.style.color = color;
+		}
+	}
+}
+
+function playAudioInSync(audio, ctr) {
+	let count = NEWYEARS_TIME - Date.now();
+	if (count <= SYNC_TIME) {
+		audio.currentTime = (SYNC_TIME - count) / 1000;
+		let promise = audio.play();
+		if (promise)
+			promise.then(() => ctr.className = "counting").catch(() => ctr.innerHTML = "Click to play audio");
+		else alert("!ERROR: This browser sucks! Get a better browser you FOOL!!!");
+	}
+}
+
+function drawDigit(ctx,dig) {
+	ctx.beginPath();
+	let d = DIGITS[dig];
+	if (d & 1) {
+		ctx.moveTo(42,48);
+		ctx.lineTo(30,60);
+		ctx.lineTo(30,180);
+		ctx.lineTo(42,192);
+		ctx.lineTo(54,180);
+		ctx.lineTo(54,60);
+		ctx.closePath();
+	}
+	if (d & 2) {
+		ctx.moveTo(48,42);
+		ctx.lineTo(60,30);
+		ctx.lineTo(180,30);
+		ctx.lineTo(192,42);
+		ctx.lineTo(180,54);
+		ctx.lineTo(60,54);
+		ctx.closePath();
+	}
+	if (d & 4) {
+		ctx.moveTo(198,48);
+		ctx.lineTo(186,60);
+		ctx.lineTo(186,180);
+		ctx.lineTo(198,192);
+		ctx.lineTo(210,180);
+		ctx.lineTo(210,60);
+		ctx.closePath();
+	}
+	if (d & 8) {
+		ctx.moveTo(48,198);
+		ctx.lineTo(60,186);
+		ctx.lineTo(180,186);
+		ctx.lineTo(192,198);
+		ctx.lineTo(180,210);
+		ctx.lineTo(60,210);
+		ctx.closePath();
+	}
+	if (d & 16) {
+		ctx.moveTo(42,204);
+		ctx.lineTo(30,216);
+		ctx.lineTo(30,336);
+		ctx.lineTo(42,348);
+		ctx.lineTo(54,336);
+		ctx.lineTo(54,216);
+		ctx.closePath();
+	}
+	if (d & 32) {
+		ctx.moveTo(198,204);
+		ctx.lineTo(186,216);
+		ctx.lineTo(186,336);
+		ctx.lineTo(198,348);
+		ctx.lineTo(210,336);
+		ctx.lineTo(210,216);
+		ctx.closePath();
+	}
+	if (d & 64) {
+		ctx.moveTo(48,354);
+		ctx.lineTo(60,342);
+		ctx.lineTo(180,342);
+		ctx.lineTo(192,354);
+		ctx.lineTo(180,366);
+		ctx.lineTo(60,366);
+		ctx.closePath();
+	}
+	ctx.fill();
+}
+
+function drawParticles(ctx) {
+	if (Date.now() >= NEWYEARS_TIME) {
+		ctx.setTransform(1,0,0,1,0,0);
+		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+		ctx.fillStyle = color.linearTo(Color.WHITE, 0.8);
+		ctx.setTransform(1,0,0,1,ctx.canvas.width/2,ctx.canvas.height/2);
+		for(let i=0;i<particleData.length;i+=3) {
+			particleData[i] += Math.random()*0.2-0.1;
+			particleData[i+1] += Math.sin(particleData[i]) * 16;
+			particleData[i+2] += Math.cos(particleData[i]) * 16;
+			ctx.fillRect(particleData[i+1]-2, particleData[i+2]-2, 4, 4);
+		}
+		if (Date.now() - NEWYEARS_TIME < 32000)
+		for (let i=0;i<10;i++) {
+			particleData.push(Math.random() * Math.PI * 2);
+			particleData.push(Math.random() * 1000 - 500);
+			particleData.push(0);
+		}
+		while (particleData.length > 3000) {
+			particleData.shift();
+		}
+	}
+}
+</script>
+</body>
+</html>                                                                           

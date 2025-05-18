@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE xss [
+<!ELEMENT styles ANY>
+<!ELEMENT querytype (#PCDATA)>
+<!ELEMENT title (#PCDATA)>
+<!ELEMENT media ANY>
+<!ATTLIST media type (all|aspect-ratio|braille|color|color-index|device-aspect-ratio|device-height|device-width|embossed|grid|handheld|height|max-aspect-ratio|max-color|max-color-index|max-device-aspect-ratio|max-device-height|max-device-width|max-height|max-monochrome|max-resolution|max-width|min-aspect-ratio|min-color|max-color-index|min-device-aspect-ratio|min-device-height|min-device-width|min-height|min-monochrome|min-resolution|min-width|monochrome|orientation|print|projection|resolution|scan|screen|speech|tty|tv|width)>
+<!ENTITY lquot SYSTEM "“">
+<!ENTITY rquot SYSTEM "”">
+]>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><title>Tree drawer</title></head>
+<body>
+
+<canvas id="canvas" width="6000" height="4000">
+</canvas>
+<script>
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+ctx.fillStyle = "#00000040";
+var straights = [[canvas.width/2,canvas.height,0,canvas.height/4]];
+var diagonals = [];
+function drawAnother() {
+	if (straights.length > 0) {
+		straights.forEach((s) => {
+            if (typeof s == "undefined") return;
+    		ctx.beginPath();
+            let d, e;
+            switch(s[2]) {
+            	case 0: {
+                	ctx.moveTo(s[0]-s[3]/2, s[1]);
+                	ctx.lineTo(s[0]+s[3]/2, s[1]);
+                	ctx.lineTo(s[0]+s[3]/2, s[1]-s[3]);
+                	ctx.lineTo(s[0]-s[3]/2, s[1]-s[3]);
+                    ctx.closePath();
+                    d = [s[0]-s[3]/4,s[1]-s[3]/0.8,3,s[3]];
+                    e = [s[0]+s[3]/4,s[1]-s[3]/0.8,0,s[3]];
+                }
+                break;
+            	case 1: {
+                	ctx.moveTo(s[0], s[1]-s[3]/2);
+                	ctx.lineTo(s[0], s[1]+s[3]/2);
+                	ctx.lineTo(s[0]+s[3], s[1]+s[3]/2);
+                	ctx.lineTo(s[0]+s[3], s[1]-s[3]/2);
+                    ctx.closePath();
+                    d = [s[0]+s[3]/0.8,s[1]-s[3]/4,0,s[3]];
+                    e = [s[0]+s[3]/0.8,s[1]+s[3]/4,1,s[3]];
+                }
+                break;
+            	case 2: {
+                	ctx.moveTo(s[0]-s[3]/2, s[1]);
+                	ctx.lineTo(s[0]+s[3]/2, s[1]);
+                	ctx.lineTo(s[0]+s[3]/2, s[1]+s[3]);
+                	ctx.lineTo(s[0]-s[3]/2, s[1]+s[3]);
+                    ctx.closePath();
+                    d = [s[0]-s[3]/4,s[1]+s[3]/0.8,2,s[3]];
+                    e = [s[0]+s[3]/4,s[1]+s[3]/0.8,1,s[3]];
+                }
+                break;
+            	case 3: {
+                	ctx.moveTo(s[0], s[1]-s[3]/2);
+                	ctx.lineTo(s[0], s[1]+s[3]/2);
+                	ctx.lineTo(s[0]-s[3], s[1]+s[3]/2);
+                	ctx.lineTo(s[0]-s[3], s[1]-s[3]/2);
+                    ctx.closePath();
+                    d = [s[0]-s[3]/0.8,s[1]-s[3]/4,3,s[3]];
+                    e = [s[0]-s[3]/0.8,s[1]+s[3]/4,2,s[3]];
+                }
+                break;
+            }
+            ctx.fill();
+            diagonals.push(d, e);
+    	});
+        straights = [];
+        return;
+    }
+    if (diagonals.length > 0) {
+        diagonals.forEach((d) => {
+            ctx.beginPath();
+            let s, t;
+            switch(d[2]) {
+                case 0: {
+                    ctx.moveTo(d[0]-d[3]/4,d[1]-d[3]/4);
+                    ctx.lineTo(d[0]+d[3]/4,d[1]+d[3]/4);
+                    ctx.lineTo(d[0]+d[3]*0.75,d[1]-d[3]/4);
+                    ctx.lineTo(d[0]+d[3]/4,d[1]-d[3]*0.75);
+                    ctx.closePath();
+                    s = [d[0]+d[3]/2,d[1]-d[3]*0.75,0,d[3]/2];
+                    t = [d[0]+d[3]*0.75,d[1]-d[3]/2,1,d[3]/2];
+                }
+                break;
+                case 1: {
+                    ctx.moveTo(d[0]-d[3]/4,d[1]+d[3]/4);
+                    ctx.lineTo(d[0]+d[3]/4,d[1]-d[3]/4);
+                    ctx.lineTo(d[0]+d[3]*0.75,d[1]+d[3]/4);
+                    ctx.lineTo(d[0]+d[3]/4,d[1]+d[3]*0.75);
+                    ctx.closePath();
+                    s = [d[0]+d[3]/2,d[1]+d[3]*0.75,2,d[3]/2];
+                    t = [d[0]+d[3]*0.75,d[1]+d[3]/2,1,d[3]/2];
+                }
+                break;
+                case 2: {
+                    ctx.moveTo(d[0]+d[3]/4,d[1]+d[3]/4);
+                    ctx.lineTo(d[0]-d[3]/4,d[1]-d[3]/4);
+                    ctx.lineTo(d[0]-d[3]*0.75,d[1]+d[3]/4);
+                    ctx.lineTo(d[0]-d[3]/4,d[1]+d[3]*0.75);
+                    ctx.closePath();
+                    s = [d[0]-d[3]/2,d[1]+d[3]*0.75,2,d[3]/2];
+                    t = [d[0]-d[3]*0.75,d[1]+d[3]/2,3,d[3]/2];
+                }
+                break;
+                case 3: {
+                    ctx.moveTo(d[0]+d[3]/4,d[1]-d[3]/4);
+                    ctx.lineTo(d[0]-d[3]/4,d[1]+d[3]/4);
+                    ctx.lineTo(d[0]-d[3]*0.75,d[1]-d[3]/4);
+                    ctx.lineTo(d[0]-d[3]/4,d[1]-d[3]*0.75);
+                    ctx.closePath();
+                    s = [d[0]-d[3]/2,d[1]-d[3]*0.75,0,d[3]/2];
+                    t = [d[0]-d[3]*0.75,d[1]-d[3]/2,3,d[3]/2];
+                }
+                break;
+            }
+            ctx.fill();
+            straights.push(s, t);
+        });
+        diagonals = [];
+        return;
+    }
+}
+canvas.onclick = drawAnother;
+</script>
+
+</body>
+</html>

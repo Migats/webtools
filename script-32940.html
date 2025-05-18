@@ -1,0 +1,125 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Time-Timer</title>
+<style>
+body {
+	width: 600px;
+	height: 600px;
+	position: fixed;
+	bottom: 50%;
+	right: 50%;
+	transform: translate(50%,50%);
+}
+div#controlls {
+	position: absolute;
+	bottom: 50%;
+	right: 50%;
+	transform: translate(50%,50%);
+	white-space: nowrap;
+}
+</style>
+</head>
+
+<body>
+<canvas id="canvas" width="600" height="600"></canvas>
+<script>
+	var canvas = document.getElementById("canvas");
+	var ctx = canvas.getContext("2d");
+	var size = canvas.width = canvas.height = Math.min(window.innerWidth - 16,window.innerHeight - 16);
+	document.body.style.width = document.body.style.height = size + "px";
+	var time = 0;
+	ctx.translate(size/2,size/2);
+	var timeLoop;
+	function onChangeTime(e) {
+		if (e.buttons === 1 && e.button === 0) {
+			clearTimeout(timeLoop);
+			timeLoop = "--"
+			time = 10*Math.pointDirection(window.innerWidth/2,window.innerHeight/2,e.clientX,e.clientY);
+			time = Math.round(time);
+			drawTimer(ctx,time);
+		} else if (timeLoop == "--") {
+			loopTimer();
+		}
+	}
+	function loopTimer() {
+		if (time === -1) {
+			time = parseFloat(userM.value)*60 + parseFloat(userS.value) + 1;
+		}
+		drawTimer(ctx,time);
+		time-=time>0;
+		timeLoop = setTimeout(loopTimer,1000);
+	}
+	function drawTimer(ctx,seconds) {
+		ctx.clearRect(-size/2,-size/2,size,size);
+		ctx.beginPath();
+		ctx.arc(0,0,size*.4,-.5*Math.PI,(-seconds - 900)*Math.PI/1800,true);
+		ctx.lineTo(0,0);
+		ctx.closePath();
+		ctx.fillStyle = "#ff0000";
+		ctx.fill();
+		ctx.beginPath();
+		ctx.arc(0,0,size*.02,0,2*Math.PI);
+		ctx.fillStyle = "#000000";
+		ctx.fill();
+		ctx.lineWidth = size*.009;
+		ctx.lineCap = "round";
+		ctx.font = "700 " + (size*.08) + "px Impact, fantasy, sans-serif";
+		ctx.textBaseline = "middle";
+		ctx.textAlign = "center";
+		for (var i = 0; i < 60; i++) {
+			ctx.rotate(-i*Math.PI/30);
+			ctx.beginPath();
+			ctx.moveTo(0,-size*.395);
+			ctx.lineTo(0,-size*.35);
+			if (i % 5 === 0) {
+				ctx.lineTo(0,-size*.25);
+				ctx.translate(0,-size*.45);
+				ctx.rotate(i*Math.PI/30);
+				ctx.fillText(i,0,0);
+				ctx.rotate(-i*Math.PI/30);
+				ctx.translate(0,size*.45);
+			}
+			ctx.stroke();
+			ctx.rotate(i*Math.PI/30);
+		}
+		ctx.rotate(-seconds*Math.PI/1800);
+		ctx.translate(0,-size*.42);
+		ctx.rotate(seconds*Math.PI/1800);	
+		ctx.beginPath();
+		var lens = ctx.createRadialGradient(0,0,size*.014,-size*.003,-size*.003,size*.03);
+		lens.addColorStop(0,"transparent");
+		lens.addColorStop(1,"#808080");
+		ctx.fillStyle = lens;
+		ctx.arc(0,0,size*.02,0,2*Math.PI);
+		ctx.fill();
+		ctx.rotate(-seconds*Math.PI/1800);
+		ctx.translate(0,size*.42);
+		ctx.rotate(seconds*Math.PI/1800);	
+	}
+	window.onresize = function () {
+		size = canvas.width = canvas.height = Math.min(window.innerWidth - 16,window.innerHeight - 16);
+		document.body.style.width = document.body.style.height = size + "px";
+		ctx.translate(size/2,size/2);
+		drawTimer(ctx,time);
+	}
+	window.onmousedown = window.onmousemove = window.onmouseup = onChangeTime;
+	Math.pointDirection = function (x1,y1,x2,y2) {
+		if (x1 === x2) {
+			return (y1>y2)*180+180;
+		}
+		if (y1 === y2) {
+			return (x1>x2)*180-90;
+		}
+		var x3 = x1-x2;
+		var y3 = y1-y2;
+		var ang = Math.atan(x3/y3)*180/Math.PI;
+		if (ang < 0) {ang += 360};
+		if (y3 < 0) {ang += 180};
+		return ang % 360;
+	}
+	window.onload = loopTimer;
+</script>
+</body>
+</html>

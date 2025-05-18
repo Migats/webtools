@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+<script>
+	window.onload = function () {
+		document.getElementById('regexp').onchange = function () {
+			document.getElementById('result').innerHTML = JSON.stringify((RegExp(this.value)).exec(document.getElementById('text').value))
+		}
+		document.getElementById('text').onchange = function () {
+			document.getElementById('result').innerHTML = JSON.stringify((RegExp(document.getElementById('regexp').value)).exec(this.value))
+		}
+	}
+</script>
+</head>
+
+<body>
+<p>
+    <label>RegExp content:
+        /<input type="text" name="regexp" id="regexp" placeholder="sample content">/
+    </label>
+    <br />
+    <label>Text:
+        "<input name="text" type="text" id="text" placeholder="sample text">"
+    </label>
+</p>
+<p>Result: <span id="result"></span></p>
+</body>
+</html>

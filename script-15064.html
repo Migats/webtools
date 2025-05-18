@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Glowclock</title>
+<style>
+	body {
+		/* cursor: none; */
+	}
+	
+	canvas {
+		position: fixed;
+		opacity: 0.875;
+		bottom: 50%;
+		right: 50%;
+		transform: translate(50%,50%);
+	}
+
+	#clock {
+		background-color: #00000028;
+		border-radius: 96px;
+		padding: 8px 32px;
+	}
+
+	body::before {
+		content: "";
+		display: inline-block;
+		width: 1600px;
+		height: 412px;
+		background-color: currentColor;
+		position: fixed;
+		bottom: 50%;
+		right: 50%;
+		transform: translate(50%,50%);
+		filter: blur(128px);
+	}
+
+	#newyears-countdown {
+		color: white;
+		position: fixed;
+		bottom: 50%;
+		right: 50%;
+		transform: translate(50%,50%);
+		font-family: fantasy;
+		text-shadow: #000000 0.125em 0.0625em 0.25em;
+		text-align: center;
+		text-wrap: nowrap;
+		font-size: 10vh;
+	}
+
+	#newyears-countdown.counting {
+		font-size: 60vh;
+		animation: shot 1s infinite, grow 25s ease-out;
+	}
+
+	#newyears-countdown:empty {
+		animation-play-state: paused;
+	}
+
+	#newyears-countdown.final {
+		animation: final 1s;
+		font-size: 27vh;
+		z-index: -1;
+	}
+
+	#options-menu {
+		position: fixed;
+		right: 4px;
+		bottom: 4px;
+		color: white;
+		transform: translateY(0);
+		transition: transform 400ms;
+	}
+
+	#options-menu.hidden {
+		transform: translateY(120%);
+		transition: transform 4s 2s;
+	}
+
+	#options-menu > * {
+		appearance: none;
+		border: 2px solid white;
+		background-color: transparent;
+		border-radius: 16px;
+		width: 64px;
+		height: 64px;
+		opacity: 0.5;
+		margin: 3px;
+		vertical-align: middle;
+		color: inherit;
+		font-size: 32px;
+	}
+	
+	#options-menu > :hover,
+	#options-menu > :focus {
+		opacity: 1;
+	}
+
+	@keyframes grow {
+		from {
+			font-size: 20vh;
+		}
+		to {
+			font-size: 60vh;
+		}
+	}
+
+	@keyframes shot {
+		0% {
+			opacity: 0.0;
+			transform: translate(50%,50%) rotate(20deg) scale(0.5);
+		}
+		20% {
+			opacity: 0.5;
+			transform: translate(50%,50%) rotate(0deg) scale(1.0);
+		}
+		80% {
+			opacity: 0.5;
+			transform: translate(50%,50%) rotate(0deg) scale(1.0);
+		}
+		100% {
+			opacity: 0.0;
+			transform: translate(50%,50%) rotate(-20deg) scale(0.5);
+		}
+	}
+
+	@keyframes final {
+		0% {
+			opacity: 0.0;
+			transform: translate(50%,50%) rotate(20deg) scale(0.5);
+		}
+		20% {
+			opacity: 1.0;
+			transform: translate(50%,50%) rotate(0deg) scale(1.0);
+		}
+	}
+
+	@media all and (max-width: 1600px) {
+		canvas, body::before {
+			transform: scale(0.5) translate(100%,100%);
+		}
+	}
+
+	@media all and (max-width: 683px) {
+		canvas, body::before {
+			transform: scale(0.25) translate(200%,200%);
+		}
+	}
+
+	@media all and (min-width: 3072px) {
+		canvas, body::before {
+			transform: scale(2.0) translate(25%,25%);
+		}
+	}
+
+	@media screen and (orientation: portrait) {
+		body > *, body::before {
+			display: none;
+		}
+		body::after {
+			content: "";
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			background-image: url("images/landscape_display.svg");
+			background-size: contain;
+			background-repeat: no-repeat;
+			background-position: center;
+		}
+	}
+</style>
+<script src="https://kit.fontawesome.com/9476b34afb.js" crossorigin="anonymous"></script>
+<script src="javascripts/color.js"></script>
+<meta charset="utf-8" />
+</head>
+<body>
+<canvas id="particles"></canvas>
+<canvas id="clock" width="1560" height="400">!ERROR: This browser sucks! Get a better browser you FOOL!!!</canvas>
+<noscript>!ERROR: Program is running in sandbox. Please enable JavaScript and refresh. I promise nothing bad will happen.</noscript>
+<div id="newyears-countdown"></div>
+<div id="options-menu" class="hidden">
+	<button id="btn-sound" title="Toggle sound"><i class="fa-solid fa-volume-xmark"></i></button>
+	<button id="btn-tts" title="Toggle speech"><i class="fa-solid fa-comment-slash"></i></button>
+	<button id="btn-timermenu" title="Set timer"><i class="fa-solid fa-hourglass"></i></button>
+</div>
+<script>
+const COUNTER = document.getElementById("newyears-countdown");
+const CLOCK_CONTEXT = document.getElementById("clock").getContext("2d");
+const PARTICLE_CONTEXT = document.getElementById("particles").getContext("2d");
+const OPTIONS_MENU = document.getElementById("options-menu");
+const BTN_SOUND = document.getElementById("btn-sound");
+const BTN_TTS = document.getElementById("btn-tts");
+const BASE_COLOR = Color.fromRgba(255, 255, 255, 0.2);
+const DIGITS = new Uint8Array([119,36,94,110,45,107,123,38,127,111]); // Bitset for each segment
+const REQUEST_GET = new URLSearchParams(location.search);
+const SYNC_TIME = Number(REQUEST_GET.get("audio-delay")) || 0;
+const NEWYEARS_CLOCK_SONG = new Audio("others/newyearsclock%20full.wav");
+const TIMER_ALARM = new Audio("others/sound%20alarm.wav");
+const NEWYEARS_TIME = new Date(new Date().getFullYear()+1, 0, 1).getTime();
+const NEWYEARS_MODE = NEWYEARS_TIME - Date.now() < 7_200_000;
+const COUNTER_TIME = NEWYEARS_MODE ? NEWYEARS_TIME : REQUEST_GET.has("timer") ? Date.now() + (Number(REQUEST_GET.get("timer")) || 0) * 60_000 : -1;
+const COUNT_MILESTONES = [10_000, 20_000, 30_000, 60_000, 120_000, 300_000, 600_000, 900_000, 1_800_000, 3_600_000];
+
+var color = Color.fromRgb(0,255,255);
+var particleData = [];
+var count;
+var hideOptions = -1;
+var soundEnabled = location.hash == "#widget", ttsEnabled = REQUEST_GET.has("speech");
+if (NEWYEARS_MODE) document.title = "Newyears Clock - Counting for " + new Date().getFullYear()+1;
+else if (COUNTER_TIME !== -1) document.title = "Glowclock Timer";
+if (window.top == window.self && location.hash != "#widget") {
+	document.body.style.backgroundColor = Color.BLACK;
+	window.onmousemove = function() {
+		OPTIONS_MENU.classList.remove("hidden");
+		clearTimeout(hideOptions);
+		hideOptions = setTimeout(() => {
+			OPTIONS_MENU.classList.add("hidden");
+		}, 5000);
+	}
+}
+document.body.style.color = color;
+PARTICLE_CONTEXT.canvas.width = window.innerWidth;
+PARTICLE_CONTEXT.canvas.height = window.innerHeight;
+TIMER_ALARM.load();
+NEWYEARS_CLOCK_SONG.load();
+TIMER_ALARM.muted = NEWYEARS_CLOCK_SONG.muted = !soundEnabled;
+requestAnimationFrame(render);
+
+BTN_SOUND.onclick = function () {
+	NEWYEARS_CLOCK_SONG.muted = soundEnabled;
+	TIMER_ALARM.muted = soundEnabled;
+	soundEnabled = !soundEnabled;
+	this.innerHTML = soundEnabled ? "<i class=\"fa-solid fa-volume-high\"></i>" : "<i class=\"fa-solid fa-volume-xmark\"></i>";
+}
+
+BTN_TTS.onclick = function() {
+	ttsEnabled = !ttsEnabled;
+	this.innerHTML = ttsEnabled ? "<i class=\"fa-solid fa-comment-dots\"></i>" : "<i class=\"fa-solid fa-comment-slash\"></i>";
+	if (COUNTER_TIME == -1 || NEWYEARS_MODE) speak(formatClock(new Date()));
+	else speak(formatTimer(count));
+}
+
+if (soundEnabled) BTN_SOUND.innerHTML = "<i class=\"fa-solid fa-volume-high\"></i>";
+if (ttsEnabled) {
+	BTN_TTS.innerHTML = "<i class=\"fa-solid fa-comment-dots\"></i>";
+}
+if (!window.speechSynthesis) BTN_TTS.style.display = "none";
+
+function render() {
+	countDown(COUNTER);
+	CLOCK_CONTEXT.clearRect(0,0,CLOCK_CONTEXT.canvas.width,CLOCK_CONTEXT.canvas.height);
+	drawBase(CLOCK_CONTEXT);
+	drawTime(CLOCK_CONTEXT);
+	drawParticles(PARTICLE_CONTEXT);
+	if (NEWYEARS_MODE && NEWYEARS_CLOCK_SONG.paused) {
+		playAudioInSync(NEWYEARS_CLOCK_SONG, COUNTER);
+	}
+	requestAnimationFrame(render);
+}
+
+function drawBase(ctx) {
+	ctx.fillStyle = BASE_COLOR;
+	for (let i=0;i<6;i++) {
+		drawDigit(ctx,8);
+		ctx.translate(234,0);
+		if (i & 1) {
+			ctx.fillRect(30,120,24,24);
+			ctx.fillRect(30,240,24,24);
+			ctx.translate(72,0);
+		}
+	}
+	ctx.setTransform(1,0,0,1,0,0);
+}
+
+function drawTime(ctx) {
+	let now = new Date(Date.now());
+	let digits;
+	if (COUNTER_TIME > -1 && COUNTER_TIME < Date.now()) digits = [0,0,0,0,0,0];
+	else if (NEWYEARS_MODE || COUNTER_TIME === -1) {
+		digits = [
+			Math.floor(now.getHours() / 10),
+			now.getHours() % 10,
+			Math.floor(now.getMinutes() / 10),
+			now.getMinutes() % 10,
+			Math.floor(now.getSeconds() / 10),
+			now.getSeconds() % 10,
+			now.getMilliseconds()
+		];
+		if (now.getSeconds() == 0 && (now.getMinutes() % 15 == 0 && !NEWYEARS_MODE || NEWYEARS_MODE && COUNT_MILESTONES.indexOf(count - count % 60_000) > -1)) {
+			let string = "";
+			if (now.getMinutes() % 15 == 0) string += formatClock(now) + ". ";
+			if (NEWYEARS_MODE) {
+				string += formatTimer(count).replace(/left$/, "until newyear");
+			}
+			speak(string);
+		}
+	} else {
+		count = Math.min(count + 1000, 359_999_000 + count % 1000);
+		digits = [
+			Math.floor(count / 36_000_000),
+			Math.floor(count / 3_600_000) % 10,
+			Math.floor(count / 600_000) % 6,
+			Math.floor(count / 60_000) % 10,
+			Math.floor(count / 10_000) % 6,
+			Math.floor(count / 1000) % 10,
+			count % 1000
+		]
+	}
+	ctx.fillStyle = color.linearTo(Color.WHITE, 0.65);
+	for (let i=0;i<6;i++) {
+		drawDigit(ctx,digits[i]);
+		ctx.translate(234,0);
+		if (i & 1) {
+			if (digits[6] % 1000 < 500) {
+				ctx.fillRect(30,120,24,24);
+				ctx.fillRect(30,240,24,24);
+			}
+			ctx.translate(72,0);
+		}
+	}
+	ctx.setTransform(1,0,0,1,0,0);
+	ctx.fillStyle = "#ffffffa5";
+}
+
+function countDown(ctr) {
+	if (COUNTER_TIME === -1) return;
+	count = COUNTER_TIME - Date.now();
+	if (NEWYEARS_MODE && ctr.className != "final") {
+		if (count <= 0) {
+			color = Color.fromRgb(255,204,0);
+			document.body.style.color = color;
+			ctr.innerHTML = "Happy " + new Date().getFullYear() + "!";
+			ctr.className = "final";
+			document.title = "Newyears Clock - " + ctr.innerHTML;
+		} else if (count <= 60000) {
+			color.red = 0;
+			color.green = (count - 1000)*255/59000;
+			if (count <= 30_000) {
+				ctr.innerHTML = Math.ceil(count / 1000);
+				if (count <= 1000) {
+					color.blue = count * 0.255;
+				}
+			} else {
+				color.blue = 255;
+			}
+		}
+	} else if (!NEWYEARS_MODE) {
+		color.blue = 0;
+		if (count <= 3_600_000) {
+			color.red = count < 900_000 ? (count) * 255 / 10_000 : (3_600_000 - count) * 255 / 2_700_000;
+			color.green = count < 300_000 ? (count - 60_000) * 255 / 480_000 : (count + 300_000) * 255 / 1200_000;
+			if (count <= 0) {
+				color = new Color(-1);
+				if (count > -1000)speak("Time's up");
+			} else if (COUNT_MILESTONES.indexOf(count - (count % 1000) + 1000) > -1) {
+				speak(formatTimer(count + 1000));
+				color = color.linearTo(Color.WHITE, count % 1000 / 1000);
+				if (count < 10_000 && TIMER_ALARM.paused) TIMER_ALARM.play();
+			}
+		}
+	}
+	document.body.style.color = color;
+}
+
+function playAudioInSync(audio, ctr) {
+	let count = COUNTER_TIME - Date.now();
+	if (count <= 415410 + SYNC_TIME && count > 0) {
+		audio.currentTime = (415410 + SYNC_TIME - count) / 1000;
+		let promise = audio.play();
+		if (promise)
+			promise.then(() => ctr.className = "counting").catch(() => ctr.innerHTML = "Click to play audio");
+		else alert("!ERROR: This browser sucks! Get a better browser you FOOL!!!");
+	}
+}
+
+function drawDigit(ctx,dig) {
+	ctx.beginPath();
+	let d = DIGITS[dig];
+	if (d & 1) {
+		ctx.moveTo(42,48);
+		ctx.lineTo(30,60);
+		ctx.lineTo(30,180);
+		ctx.lineTo(42,192);
+		ctx.lineTo(54,180);
+		ctx.lineTo(54,60);
+		ctx.closePath();
+	}
+	if (d & 2) {
+		ctx.moveTo(48,42);
+		ctx.lineTo(60,30);
+		ctx.lineTo(180,30);
+		ctx.lineTo(192,42);
+		ctx.lineTo(180,54);
+		ctx.lineTo(60,54);
+		ctx.closePath();
+	}
+	if (d & 4) {
+		ctx.moveTo(198,48);
+		ctx.lineTo(186,60);
+		ctx.lineTo(186,180);
+		ctx.lineTo(198,192);
+		ctx.lineTo(210,180);
+		ctx.lineTo(210,60);
+		ctx.closePath();
+	}
+	if (d & 8) {
+		ctx.moveTo(48,198);
+		ctx.lineTo(60,186);
+		ctx.lineTo(180,186);
+		ctx.lineTo(192,198);
+		ctx.lineTo(180,210);
+		ctx.lineTo(60,210);
+		ctx.closePath();
+	}
+	if (d & 16) {
+		ctx.moveTo(42,204);
+		ctx.lineTo(30,216);
+		ctx.lineTo(30,336);
+		ctx.lineTo(42,348);
+		ctx.lineTo(54,336);
+		ctx.lineTo(54,216);
+		ctx.closePath();
+	}
+	if (d & 32) {
+		ctx.moveTo(198,204);
+		ctx.lineTo(186,216);
+		ctx.lineTo(186,336);
+		ctx.lineTo(198,348);
+		ctx.lineTo(210,336);
+		ctx.lineTo(210,216);
+		ctx.closePath();
+	}
+	if (d & 64) {
+		ctx.moveTo(48,354);
+		ctx.lineTo(60,342);
+		ctx.lineTo(180,342);
+		ctx.lineTo(192,354);
+		ctx.lineTo(180,366);
+		ctx.lineTo(60,366);
+		ctx.closePath();
+	}
+	ctx.fill();
+}
+
+function drawParticles(ctx) {
+	if (Date.now() >= COUNTER_TIME && NEWYEARS_MODE) {
+		ctx.setTransform(1,0,0,1,0,0);
+		ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+		ctx.fillStyle = color.linearTo(Color.WHITE, 0.8);
+		ctx.setTransform(1,0,0,1,ctx.canvas.width/2,ctx.canvas.height/2);
+		for(let i=0;i<particleData.length;i+=3) {
+			particleData[i] += Math.random()*0.2-0.1;
+			particleData[i+1] += Math.sin(particleData[i]) * 16;
+			particleData[i+2] += Math.cos(particleData[i]) * 16;
+			ctx.fillRect(particleData[i+1]-2, particleData[i+2]-2, 4, 4);
+		}
+		if (Date.now() - COUNTER_TIME < 32000)
+		for (let i=0;i<10;i++) {
+			particleData.push(Math.random() * Math.PI * 2);
+			particleData.push(Math.random() * 1000 - 500);
+			particleData.push(0);
+		}
+		while (particleData.length > 3000) particleData.shift(); // Removing this line causes serious problems!
+	}
+}
+
+async function speak(string) {
+	if (ttsEnabled && !window.speechSynthesis.speaking) window.speechSynthesis.speak(new SpeechSynthesisUtterance(string));
+}
+
+function formatTimer(ms) {
+	let s = Math.floor(ms / 1000) % 60;
+	let m = Math.floor(ms / 60_000) % 60;
+	let h = Math.floor(ms / 3_600_000);
+	let strings = [];
+	if (h > 0) {
+    	strings.push(h + " hour" + (h > 1 ? 's' : ''));
+	}
+	if (m > 0) {
+    	strings.push(m + " minute" + (m > 1 ? 's' : ''));
+	}
+	if (s > 0) {
+		strings.push(s + " second" + (s !== 1 ? 's' : ''));
+	}
+	if (strings[0] == undefined) debugger;
+	if (strings.length == 1) return strings[0] + " left";
+	return strings[0] + " and " + strings[1] + " left";
+}
+
+function formatClock(date) {
+	let h = (date.getHours() - 1) % 12 + 1;
+	let m = date.getMinutes();
+	let string = "";
+	if (m === 0) {
+  		string = `${h} o'clock`;
+	} else if (m === 15) {
+  		string = `quarter past ${h}`;
+	} else if (m === 30) {
+  		string = `half past ${h}`;
+	} else if (m === 45) {
+  		string = `quarter to ${h === 12 ? 1 : h + 1}`;
+	} else if (m < 30) {
+  		string = `${m} minute${m > 1 ? 's' : ''} past ${h}`;
+	} else {
+  		let minutesTo = 60 - m;
+  		string = `${minutesTo} minute${minutesTo > 1 ? 's' : ''} to ${h === 12 ? 1 : h + 1}`;
+	}
+	return string;
+}
+
+</script>
+</body>
+</html>

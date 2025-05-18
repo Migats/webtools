@@ -1,0 +1,246 @@
+@charset "utf-8";
+@import url("themes/jquery.mobile.icons.min.css");
+/* CSS Document */
+/* for HTML */
+html body {
+	margin: 0;
+	font-family: calibri;
+	background-color: #FFF;
+}
+html body h1,
+html body h2,
+html body h3,
+html body h4,
+html body h5,
+html body h6 {
+	font-family: "calibri light", calibri;
+	font-weight: normal;
+	color: #5B9BD5;
+}
+html body p.title {
+	font-family: "calibri light", calibri;
+	font-size: 24px;
+}
+html body p.subtitle {
+	color: #595959;
+	letter-spacing: 1px;
+}
+html body cite,
+html body em.subtle {
+	font-style: italic;
+	color: #3F3F3F;
+}
+html body i {
+	color: #5B9BD5;
+}
+html body blockquote {
+	margin-top: 16px;
+	margin-right: 32px;
+	margin-bottom: 16px;
+	margin-left: 32px;
+	padding-top: 15px;
+	padding-right: 0;
+	padding-bottom: 15px;
+	padding-left: 0;
+	border-top-width: 1px;
+	border-bottom-width: 1px;
+	border-top-style: solid;
+	border-bottom-style: solid;
+	border-top-color: #5B9BD5;
+	border-bottom-color: #5B9BD5;
+}
+html body cite.subtle {
+	font-variant: small-caps;
+	color: #3F3F3F;
+	font-style: normal;
+}
+html body cite.intensely,
+html body i.cite {
+	color: #5B9BD5;
+	font-style: normal;
+	font-variant: small-caps;
+	font-weight: bold;
+}
+html .book-title {
+	font-weight: bold;
+	font-style: italic;
+}
+html body q {
+	quotes: "‘" "’";
+}
+html body q q {
+	quotes: "“" "”";
+}
+html body pre q,
+html body code q,
+html body q.code {
+	quotes: "'" "'";
+}
+html body pre q q,
+html body code q q,
+html q.code q {
+	quotes: '"' '"';
+}
+html body q:lang(no) {
+	quotes: "~" "~";
+}
+html body :link {
+	text-decoration: none;
+}
+html body :link:hover {
+	text-decoration: underline;
+}
+html body a.address {
+	appearance: hyperlink;
+	font-style: italic;
+}
+html body a.address:before {
+	content: "“";
+}
+html body a.address:after {
+	content: "”";
+}
+/* for SVG */
+@keyframes rotating {
+	from {
+		transform: rotate(0);
+	}
+	to {
+		transform: rotate(360);
+	}
+}
+@keyframes turning {
+	from {
+		transform: rotateY(0);
+	}
+	to {
+		transform: rotateY(360);
+	}
+}
+@keyframes flipping {
+	from {
+		transform: rotateX(0);
+	}
+	to {
+		transform: rotateX(360);
+	}
+}
+svg text,
+svg tspan,
+svg tref,
+svg textpath {
+	dominant-baseline: central;
+	text-anchor: middle;
+	fill: #000;
+	stroke: none;
+	font-family: calibri;
+	font-size: 12;
+}
+svg path,
+svg line,
+svg polygon,
+svg polyline,
+svg circle,
+svg ellipse,
+svg rect,
+svg .stroke-flex {
+	fill: none;
+	stroke: #000;
+	fill-rule: evenodd;
+}
+svg .fill {
+	fill: #fff;
+}
+svg .fill.flex {
+	fill: #000;
+	stroke: none;
+}
+svg .stroke1 {
+	stroke-width: 2;
+}
+svg .stroke2 {
+	stroke-width: 3;
+}
+svg .stroke3 {
+	stroke-width: 4;
+}
+svg .stroke4 {
+	stroke-width: 5;
+}
+svg .stroke5 {
+	stroke-width: 6;
+}
+svg .stroke6 {
+	stroke-width: 7;
+}
+svg .inverted-fill {
+	fill: #000;
+	stroke: #FFF;
+}
+svg .write-marker {
+	fill-opacity: .75;
+}
+svg .non-zero {
+	fill-rule: nonzero;
+}
+svg .rotate-quarter {
+	transform: rotate(90);
+}
+svg .rotate-half {
+	transform: rotate(180);
+}
+svg .rotate-half.rotate-quarter {
+	transform: rotate(270);
+}
+svg .mirror-horizontally {
+	transform: scaleX(-1);
+}
+svg .flip-vertically {
+	transform: scaleY(-1);
+}
+svg .rotate-eight {
+	transform: rotate(45);
+}
+svg .rotate-half.rotate-quarter.rotate-eight {
+	transform: rotate(315);
+}
+svg .rotate-quarter.rotate-eight {
+	transform: rotate(135);
+}
+svg .rotate-half.rotate-eight {
+	transform: rotate(225);
+}
+svg .round-strokes {
+	stroke-linecap: round;
+	stroke-linejoin: round;
+}
+svg .rotating {
+	animation-iteration-count: infinite;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+	animation-name: rotating;
+}
+svg .turning {
+	animation-iteration-count: infinite;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+	animation-name: turning;
+}
+svg .flipping {
+	animation-iteration-count: infinite;
+	animation-duration: 2s;
+	animation-timing-function: linear;
+	animation-name: flipping;
+}
+@media grid {
+	svg {
+		background-image: url("http://i.imgur.com/OiQ6JjT.png");
+		background-size: 32px;
+	}
+	svg path,
+	svg line,
+	svg polygon,
+	svg polyline {
+		stroke: #06F;
+	}
+}

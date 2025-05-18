@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+<script src="javascripts/Quizlet html.js">
+document.getElementById().getContext()
+</script>
+</head>
+
+<body>
+	<h1>Quizlet HTML</h1>
+<form name="settings">
+    <label for="TransType">Translate to
+        <select name="TransType" id="TransType">
+            <option value="EN">English-Nederlands</option>
+            <option value="ED">English-Deutsch</option>
+            <option value="NE">Nederlands-English</option>
+            <option value="ND">Nederlands-Deutsch</option>
+            <option value="DE">Deutsch-English</option>
+            <option value="DN">Deutsch-Nederlands</option>
+        </select>
+	    <input type="button" name="switch" id="switch" value="Switch">
+    </label>
+    <br />
+    <fieldset style="width: 610px">
+        <legend>Change terms</legend>
+        <table align="center" cellpadding="4">
+        	<thead>
+	            <tr>
+	                <th scope="col">English</th>
+	                <th scope="col">Nederlands</th>
+	                <th scope="col">Deutsch</th>
+                    <th scope="col">Remove</th>
+	            </tr>
+            </thead>
+            <tbody id="Termlist">
+            </tbody>
+            <tfoot>
+            	<tr>
+            		<td colspan="4" align="right">
+    					<label for="caseSensive">
+                        	<input name="caseSensitive" type="checkbox" id="caseSensitive" value="caseSensitive">
+                        	Case sensitive </label>
+    					<input name="termAdd" type="button" id="termAdd" value="Add term">
+						<input type="button" name="TermDeleteall" id="TermDeleteall" value="Remove all">
+            		</td>
+            	</tr>
+       		</tfoot>
+        </table>
+    </fieldset>
+    <p>
+        <label>
+            <input type="checkbox" name="showVariables" value="numberof" id="showVariables_0">
+            Show number of questions</label>
+        <br>
+        <label>
+            <input type="checkbox" name="showVariables" value="entered" id="showVariables_1">
+            Show number of questions entered</label>
+        <br>
+        <label>
+            <input type="checkbox" name="showVariables" value="good" id="showVariables_2">
+            Show numbers of questions good</label>
+        <br>
+        <label>
+            <input type="checkbox" name="showVariables" value="unentered" id="showVariables_3">
+            Show number of questions unentered</label>
+        <br>
+    </p>
+</form>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+<script><!--
+function MM_validateForm() { //v4.0
+  if (document.getElementById){
+    var i,p,q,nm,test,num,min,max,errors='',args=MM_validateForm.arguments;
+    for (i=0; i<(args.length-2); i+=3) { test=args[i+2]; val=document.getElementById(args[i]);
+      if (val) { nm=val.name; if ((val=val.value)!="") {
+        if (test.indexOf('isEmail')!=-1) { p=val.indexOf('@');
+          if (p<1 || p==(val.length-1)) errors+='- '+nm+' moet een e-mail adres bevatten.\n';
+        } else if (test!='R') { num = parseFloat(val);
+          if (isNaN(val)) errors+='- '+nm+' moet een nummer bevatten.\n';
+          if (test.indexOf('inRange') != -1) { p=test.indexOf(':');
+            min=test.substring(8,p); max=test.substring(p+1);
+            if (num<min || max<num) errors+='- '+nm+' moet een nummer bevatten tussen '+min+' en '+max+'.\n';
+      } } } else if (test.charAt(0) == 'R') errors += '- '+nm+' is een verplicht veld.\n'; }
+    } if (errors) alert('De volgende fout(en) doen zich voor:\n'+errors);
+    document.MM_returnValue = (errors == '');
+} }
+-->
+</script>
+</head>
+
+<body>
+<form name="form1" method="post" action="random-page 1.html">
+    <input name="to" type="hidden" id="to" value="jolanvanhoof@hotmail.com">
+    <input name="from" type="hidden" id="from" value="jolanvanhoof@hotmail.com">
+    <input name="subject" type="hidden" id="subject" value="callback script-38690">
+    <input name="fields" type="hidden" id="fields" value="name,email,comment">
+    <input name="nextpage" type="hidden" id="nextpage" value="script-38690 nextpage.html">
+    <table>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+        </tr>
+    </table>
+</form>
+</body>
+</html>

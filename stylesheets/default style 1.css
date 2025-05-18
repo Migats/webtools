@@ -1,0 +1,128 @@
+@charset "utf-8";
+/* 
+	CSS Document 
+	UserAgent stylesheet by Migats21
+*/
+@import url("https://fonts.googleapis.com/css?family=Source+Code+Pro:200,300,400,500,600,700,900|Source+Sans+Pro:200,200i,300,300i,400,400i,600,600i,700,700i,900,900i|Source+Serif+Pro:400,600,700&subset=cyrillic,cyrillic-ext,greek,greek-ext,latin-ext,vietnamese");
+body {
+	margin: 0px;
+	font-family: "Source Serif Pro", serif;
+}
+@media not print {
+	body > * {
+		margin-left: 8px;
+		margin-right: 8px;
+	}
+	body > :first-child {
+		margin-top: .5em;
+	}
+	body > :last-child {
+		margin-bottom: .5em;
+	}
+	body > div {
+		margin: 0px;
+		padding-left: 8px;
+		padding-right: 8px;
+	}
+	body > div:first-child {
+		padding-top: 8px;
+	}
+	body > div:last-child {
+		padding-bottom: 8px;
+	}
+	@media all and (min-width: 210mm) {
+		body > div#gridContainer {
+			width: 160mm;
+			padding-left: 25mm;
+			padding-right: 25mm;
+			margin-left: auto;
+			margin-right: auto
+		}
+	}
+}
+body > div#mainContainer {
+	position: fixed;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	overflow: auto;
+}
+header > h1, p.title {
+	font-size: 2.5em;
+	font-weight: 700;
+}
+header > p:not(.title) {
+	font-size: 1.125em;
+}
+a:link:not(:hover) {
+	text-decoration: none;
+}
+b {
+	font-weight: 700;
+}
+em {
+	font-style: oblique;
+}
+i {
+	font-style: italic;
+}
+ol ol,
+ul ol {
+	list-style-type: lower-latin;
+}
+ol ol ol,
+ol ul ol,
+ul ol ol,
+ul ul ol {
+	list-style-type: lower-roman;
+}
+ol[type="1"] {
+	list-style-type: decimal !important;
+}
+ol[type="A"] {
+	list-style-type: upper-latin !important;
+}
+ol[type="a"] {
+	list-style-type: lower-latin !important;
+}
+ol[type="I"] {
+	list-style-type: upper-roman !important;
+}
+ol[type="i"] {
+	list-style-type: lower-roman !important;
+}
+pre {
+	white-space: pre-wrap;
+}
+q {
+	quotes: "\00201C" "\00201D" "\002018" "\002019";
+}
+code q {
+	quotes: '"' '"' "'" "'";
+}
+strong {
+	/* font-weight: 700; */
+	font-weight: 800;
+}
+table {
+	border-collapse: collapse;
+}
+table * {
+	vertical-align: inherit;
+}
+table td, table th {
+	margin: 0px;
+}
+var {
+	font-family: "Source Serif Pro", serif !important;
+}
+svg * {
+	fill: currentColor;
+}
+svg [fill="none" i] {
+	stroke: currentColor;
+}
+svg [stroke]:not([stroke="none" i]) {
+	fill: none;
+}

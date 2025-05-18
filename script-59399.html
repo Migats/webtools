@@ -1,0 +1,145 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>Script</title>
+		<script type="text/javascript" src="javascripts/calculator.js"></script>
+		<script>
+			window.addEventListener("click",function (e) {
+				var input = document.getElementById("calcText");
+				input.value.replace(/\0/,"");
+				if (e.target.className != "btn") {
+					return;
+				}
+				if (e.target.hasAttribute("ins")) {
+					var selstart = input.selectionStart;
+					var selend = input.selectionEnd;
+					var text = e.target.getAttribute("ins");
+					var movement = selstart + text.length;
+					var totallength = input.value.length + text.length + selstart - selend;
+					input.value = input.value.replace(/^([abctxyz]\s*[-+*/%]?)=/,"$1\0");
+					if (/=/.test(input.value) && /^\w|^\.|^\u221a|^\(/.test(text)) {
+						input.value = "";
+						selstart = selend = 0;
+						movement = text.length;
+					} else if (/=/.test(input.value)) {
+						input.value = input.value.slice(input.value.lastIndexOf("=")+1);
+						selstart = selend = input.value.length;
+					}
+					input.value = input.value.replace(/\0/,"=");
+					if (/\(/.test(e.target.getAttribute("ins"))) {
+						text += ")";
+					}
+					if (!(text == ")" && selstart === selend && input.value.charAt(selend) == ")")) {
+						input.value = input.value.slice(0,selstart) + text + input.value.slice(selend,totallength);
+					}
+					input.selectionStart = input.selectionEnd = movement;
+					input.focus();
+				}
+				if (e.target.id == "enter") {
+					if (/^\s*[abctxyz]\s*[-+*/%]?$/.test(input.value) && e.isTrusted) {
+						input.value += "=";
+						return;
+					}
+					input.value = input.value.replace(/^\s*([abctxyz]\s*[-+*/%]?)=\s*([^=\s])/,"$1\0$2");
+					input.value = input.value.replace(/=[^=]*/g,"");
+					input.value = input.value.replace(/\0/,"=");
+					var output = calculate(input.value,0);
+					if (typeof output != "number") {
+						alert(output);
+					} else {
+						input.value = input.value.replace(/([^+-])[-+*/%](=)/,"$1$2") + "=" + output;
+						Math.ans = output;
+					}
+					input.value = input.value.replace(/^\s*([abctxyz]\s*[-+*/%]?=)[^=]*=/,"$1");
+					input.focus();
+				} else if (e.target.id == "clearAll") {
+					input.value = "";
+					input.focus();
+				} else if (e.target.id == "clear") {
+					var text = input.value.slice(0,input.selectionStart);
+					text += input.value.slice(input.selectionStart).match(/^[\d\.]*(?:e[+-]\d+)?|^[A-Za-z0-9_$]+/);
+					if (text == input.value.slice(0,input.selectionStart)) {
+						document.getElementById("backspace").click();
+						return;
+					}
+					input.value = text.replace(/[\d\.]+(?:e[+-]\d+)?$|[A-Za-z0-9_$]+$/,"") + input.value.slice(text.length);
+					input.selectionStart = input.selectionEnd = text.replace(/[\d\.]+(?:e[+-]\d+)?$|[A-Za-z0-9_$]+$/,"").length;
+					input.focus();
+				} else if (e.target.id == "backspace") {
+					var selstart = input.selectionStart;
+					var selend = input.selectionEnd;
+					selstart -= selstart === selend;
+					input.value = input.value.slice(0,selstart) + input.value.slice(selend,totallength);
+					input.selectionStart = input.selectionEnd = selstart;
+					input.focus();
+				}
+			});
+			function press(e) {
+				if (e.keyCode === 13) {
+					document.getElementById("enter").click();
+				}
+			}
+			Math.
+		</script>
+		<link rel="stylesheet" type="text/css" href="stylesheets/calc.css" />
+	</head>
+	<body>
+		<div id="calculator-screen">
+			<table id="buttons" cellspacing="0">
+				<thead>
+					<td colspan="5"><input type="text" autofocus id="calcText" onkeydown="press(event)" spellcheck="false" /></td>
+				</thead>
+				<tbody>
+					<tr>
+						<td><div class="btn" ins="&radic;">&radic;</div></td>
+						<td><div class="btn" ins="^2">x&sup2;</div></td>
+						<td><div class="btn" ins="^">x&#696;</div></td>
+						<td><div class="btn" ins="^-1">&sup1;/&#8339;</div></td>
+						<td><div class="btn" id="%">Mod</div></td>
+					</tr>
+					<tr>
+						<td><div class="btn" id="clearAll">CE</div></td>
+						<td><div class="btn" id="clear">C</div></td>
+						<td><div class="btn" id="backspace">BS</div></td>
+						<td><div class="btn" ins="/">&divide;</div></td>
+					</tr>
+					<tr>
+						<td><div class="btn" ins="PI">&pi;</div></td>
+						<td><div class="btn" ins="7">7</div></td>
+						<td><div class="btn" ins="8">8</div></td>
+						<td><div class="btn" ins="9">9</div></td>
+						<td><div class="btn" ins="*">&times;</div></td>
+					</tr>
+					<tr>
+						<td><div class="btn" ins="E">E</div></td>
+						<td><div class="btn" ins="4">4</div></td>
+						<td><div class="btn" ins="5">5</div></td>
+						<td><div class="btn" ins="6">6</div></td>
+						<td><div class="btn" ins="+">+</div></td>
+					</tr>
+					<tr>
+						<td><div class="btn" ins="ans">ans</div></td>
+						<td><div class="btn" ins="1">1</div></td>
+						<td><div class="btn" ins="2">2</div></td>
+						<td><div class="btn" ins="3">3</div></td>
+						<td><div class="btn" ins="-">-</div></td>
+					</tr>
+					<tr>
+						<td><div class="btn" ins="(">(</div></td>
+						<td><div class="btn" ins=")">)</div></td>
+						<td><div class="btn" ins="0">0</div></td>
+						<td><div class="btn" ins=".">.</div></td>
+						<td><div class="btn" id="enter">=</div></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<select onChange="document.getElementById(&#34;calculator-screen&#34;).className = this.value">
+			<option value="">Default</option>
+			<option value="blue">Blue</option>
+			<option value="red">Red</option>
+			<option value="gray">Gray</option>
+		</select>
+	</body>
+</html>

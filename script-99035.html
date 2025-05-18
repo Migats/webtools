@@ -1,0 +1,249 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Pick the color</title>
+<script type="text/javascript">
+function choose(x1,x2,x3,x4,x5,_) {
+	return arguments[Math.floor(arguments.length * Math.random())];
+}
+function toRgb (color) {
+	return {
+		red: ((color.length < 5) ? 17 * parseInt(color.charAt((color.length == 4) ? 1 : 0),16) : parseInt(color.slice(-6,-4)),16),
+		green: ((color.length < 5) ? 17 * parseInt(color.charAt((color.length == 4) ? 2 : 1),16) : parseInt(color.slice(-4,-2)),16),
+		red: ((color.length < 5) ? 17 * parseInt(color.charAt((color.length == 4) ? 3 : 2),16) : parseInt(color.slice(-2,0)),16)
+	}
+}
+function rgb(red,green,blue) {
+	return ((red % 1 == 0 && green % 1 == 0 && blue % 1 == 0 && red < 256 && green < 256 && blue < 256) ? '#' + ((red < 16) ? '0' : '') + red.toString(16) + ((green < 16) ? '0' : '') + green.toString(16) + ((blue < 16) ? '0' : '') + blue.toString(16) : '') 
+}
+window.onload = function () {
+	document.getElementById('missrule_custom_value').setAttribute('disabled','disabled');
+	var colorfields = document.getElementsByClassName('colorfield');
+	for (var i = 0; i < colorfields; i++) {
+		colorfields.item(i).style.backgroundColor = '#' + choose('ff','80','00');
+		colorfields.item(i).height = colorfields.item(i).width;
+	}
+}
+function createData(value) {
+	switch (typeof value) {
+		case 'string':
+		var Data = {
+			value: '!string' + value.replace('!','!sign').replace(/\s/g,'!space').replace('?','!ask') + '!end',
+			type: typeof value,
+			charlength: value.length,
+			datatype: 'string',
+			number: parseFloat(value),
+			boolean: value != 'false' || value != '',
+			object: ((typeof JSON.parse(value) == 'object') ? JSON.parse(value) : {"value":value}),
+			string: value,
+			array: value.split('\s')
+		}
+		break;
+		case 'number':
+		var Data = {
+			value: ('!number' + value.toString(2).replace('.',',') + '!end').replace('!number-','!negate'),
+			type: typeof value,
+			charlenght: value.toString(2).length,
+			datatype: 'number',
+			number: value,
+			boolean: value > 0,
+			object: {"value":value},
+			array: [],
+			string: value.toString(10),
+		}
+		for (ilt in value.toString(2).split('')) {
+			array.push(value.toString(2).split('')[ilt] == '1')
+		}
+		break;
+		case 'boolean':
+		var Data = {
+			datavalue: '!boolean:' + ((value) ? 'true' : 'false'),
+			value: value,
+			type: typeof value,
+			charlength: ((value) ? 4 : 5),
+			datatype: 'boolean',
+			number: ((value) ? 1 : 0),
+			boolean: value,
+			string: ((value) ? 'true' : 'false'),
+			object: {"value":value},
+			array: [value],
+		}
+		break;
+		case 'object':
+		var DATAARAY = [], DATAOBJECT = {};
+		for (init in value) {
+			DATAARRAY[init] = value[init];
+			DATAOBJECT[((typeof init == 'number') ? 'item' : '') + init] = value[init]
+		}
+		var Data = {
+			datavalue: ((JSON.stringify(value).charAt(0) == '[') ? '!array' : '!object') + JSON.stringify(value).slice(1,JSON.stringify(value).length - 1).replace('!','!sign').replace('?','!ask').replace(/\s/g,'!space').replace('[','!inner:array').replace('{','!inner:object').replace(']','!inner:endarray').replace('}','!inner:endobject') + '!end',
+			type: typeof value,
+			datatype: ((JSON.stringify(value).charAt(0) == '[') ? 'array' : 'object'),
+			charlength: JSON.stringify(value).length,
+			boolean: value != null,
+			string: JSON.stringify(value),
+			object: DATAOBJECT,
+			array: DATAARRAY,
+			number: NaN,
+			value: value
+		}
+		break;
+		case 'function':
+		var Data = {
+			datavalue: '!' + value,
+			type: typeof value,
+			datatype: 'function',
+			value: value,
+			charlength: NaN,
+			boolean: true,
+			string: '',
+			number: NaN,
+			object: null,
+			array: null
+		};
+		break;
+		case 'undefined':
+		var Data = {
+			datavalue: '!undefined',
+			value: undefined,
+			type: 'undefined',
+			datatype: 'undefined',
+			charlength: 0,
+			boolean: false,
+			string: '',
+			number: NaN,
+			object: null,
+			array: null
+		}
+	}
+}
+</script>
+<style>
+dl, dt, dd {
+	margin-bottom: 0;
+	margin-top: 0;
+	vertical-align: middle;
+}
+.menu {
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-top-color: #CCCCCC;
+	border-right-color: #CCCCCC;
+	border-bottom-color: #CCCCCC;
+	border-left-color: #CCCCCC;
+	margin: 2px;
+	padding: 8px;
+	float: left;
+	height: 600px;
+}
+.menu {
+	width: 30%;
+}
+.mobileRequest {
+	display: none;
+}
+input[type='button'], input[type='submit'], input[type='reset'], input[type='image'], utton {
+	cursor: pointer;
+}
+fieldset {
+	margin-left: 4px;
+	margin-right: 4px;
+}
+.colorfield {}
+</style>
+</head>
+<body>
+<div class="menu" id="main">
+    <p>Klik steeds binnen de tijd op de kleur gelijk aan de onderste kleur. Je kunt kiezen hoe snel je het wilt doen en hoeveel kansen je krijgt.</p>
+    <fieldset>
+        <legend>Instellingen</legend>
+        <form name="Settings" method="get">
+            <p>
+                <label>
+                    <input name="startbutton" type="checkbox" id="startbutton" value="true">
+                    <span id="hiddentext">Starten/p</span><span id="mobileRequest">P</span>auzeren wanneer ik op de bodembalk klik
+                </label>
+                <br>
+                <label>
+                    <input name="keypad" type="checkbox" id="keypad" value="true">
+                    Nummerieke toetsen gebruiken
+                </label>
+                <br>
+                <label>
+                    <input name="status" type="checkbox" id="status" value="true">
+                    Status weergeven in de bodembalk
+                </label>
+                <br>
+                <label>
+                    <input name="sounds" type="checkbox" id="sounds" value="true">
+                    Geluiden gebruiken om het extra spannend te maken
+                </label>
+            </p>
+            <p>Als je op de verkeerde kleur klikt:
+            	<dl>
+            	    <dt>
+            	        <input checked type="radio" name="missrule" value="any" id="missrule_any" onClick="document.getElementById('missrule_custom_value').setAttribute('disabled','disabled')">
+            	        Enkele kans
+            	    </dt>
+            	</dl>
+            	<dl>
+            	    <dt>
+            	        <input type="radio" name="missrule" value="custom" id="missrule_custom" onClick="document.getElementById('missrule_custom_value').removeAttribute('disabled')">
+            	        Aangepast aantal kansen
+                    </dt>
+            	    <dd>
+            	        <input type="range" name="missrule_custom_value" id="missrule_custom_value" value="1" min="1" max="16" data-theme="a" />
+            	    </dd>
+            	</dl>
+            	<dl>
+            	    <dt>
+            	        <input type="radio" name="missrule" value="time" id="missrule_time" onClick="document.getElementById('missrule_custom_value').setAttribute('disabled','disabled')">
+            	        Onbeperkte kansen zolang het maar binnen de tijd is
+            	    </dt>
+                </dl>
+            </p>
+            <p>
+                <dl>
+                    <dt>Reactie in milliseconde:</dt>
+                    <dd>
+                    	<input name="time" size="8" type="range" id="time" max="3000" min="200" value="1500" data-theme="a">
+                    </dd>
+                </dl>
+            </p>
+            <p>
+                <input type="button" name="button" id="button" value="Start het spel">
+            </p>
+        </form>
+    </fieldset>
+</div>
+<table height="600px" border="1" align="center" bordercolor="#CCCCCC" class="menu">
+    <tr>
+        <td class="colorfield"></td>
+        <td class="colorfield"></td>
+        <td class="colorfield"></td>
+    </tr>
+    <tr>
+        <td class="colorfield"></td>
+        <td class="colorfield"></td>
+        <td class="colorfield"></td>
+    </tr>
+    <tr>
+        <td class="colorfield"></td>
+        <td class="colorfield"></td>
+        <td class="colorfield"></td>
+    </tr>
+    <tr>
+        <td id="" colspan="3" style="text-align: center; font-size: 36px;">
+        	<span id="start">Start</span>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

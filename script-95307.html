@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+<script type="text/javascript">
+	window.onload = function () {
+		document.body.style.fontFamily = 'times new roman';
+		var reChar = document.getElementById('Char');
+		var reUnic = document.getElementById('Unicode');
+		var pstbtn = document.getElementById('Paste');
+		var reFont = document.getElementById('font');
+		reChar.onkeypress = function (event) {
+			this.value = '';
+			reUnic.value = event.which.toString(16).toUpperCase();
+		}
+		pstbtn.onclick = function () {
+			reChar.focus();
+			reChar.select();
+			document.execCommand('Paste');
+			reChar.value = reChar.value.charAt(reChar.value.length - 1);
+			reChar.blur();
+			reUnic.value = reChar.value.charCodeAt(0).toString(16).toUpperCase();
+		}
+		reUnic.onkeypress = function (event) {
+			var unicode = parseInt(this.value + String.fromCharCode(event.which),16)
+			if (unicode != NaN && String.fromCharCode(unicode) && /[0|1|2|3|4|5|6|7|8|9|a|A|b|B|c|C|d|D|e|E|f|F]/.test(String.fromCharCode(event.which))) {
+				reChar.value = String.fromCharCode(unicode);
+			} else {
+				reChar.value = '';
+			}
+		}
+		reUnic.onkeydown = function () {
+			reChar.value = '';
+		}
+		reUnic.onkeyup = function () {
+			reChar.value = String.fromCharCode(parseInt(this.value,16)) || '';
+		}
+		var newFont = '';
+		reFont.onclick = function () {
+			reFont.blur();
+			var newFont = prompt('Type the name of the CSS font.',document.body.style.fontFamily);
+			document.body.style.fontFamily = newFont;
+			reChar.style.fontFamily = newFont;
+			reUnic.style.fontFamily = newFont;
+			pstbtn.style.fontFamily = newFont;
+			reFont.style.fontFamily = newFont;
+		}
+		reUnic.onfocus = function () {
+			reChar.value = '';
+			reUnic.value = '';
+		}
+	}
+</script>
+</head>
+
+<body>
+<form name="form1" method="post">
+    <p>
+        <label>
+            Your char:&trade;
+            <input type="text" name="Char" id="Char">
+            <input type="button" name="Paste" id="Paste" value="Paste">
+        </label>
+    </p>
+    <p>
+        <label>
+        	Unicode: U+
+            <input name="Unicode" type="text" id="Unicode" size="4">
+        </label>
+        <input type="button" name="font" id="font" value="Change font">
+    </p>
+</form>
+</body>
+</html>

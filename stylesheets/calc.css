@@ -1,0 +1,129 @@
+/* CSS Document */
+/*
+#calculator-screen {
+	--calc-main-color: #FFFFFF;
+	--calc-button-color: buttonface;
+	--calc-button-fill-color: #CCCCCC;
+	--calc-button-stroke-color: var(--calc-button-color);
+	--calc-main-border-color: transparent;
+	--calc-button-text-color: buttontext;
+	--calc-display-color: #000000;
+	--calc-text-back-color: #FFFFFF;
+}
+*/
+#calculator-screen {
+	display: inline-flex;
+	margin: auto;
+	border-color: transparent;
+	border-width: 0px;
+	border-style: outset;
+	background-color: transparent;
+	align-items: flex-start;
+	align-content: flex-start;
+	flex-wrap: wrap;
+	flex-basis: 40px;
+	flex-grow: 0;
+	flex-shrink: 0;
+	transition: all 0.4s 0s ease;
+}
+#calculator-screen * {
+	transition: inherit;
+}
+#calculator-screen #calcText {
+	display: block;
+	width: 100%;
+	box-sizing: border-box;
+	font-family: monospace;
+	font-size: 32px;
+	background-color: #FFFFFF;
+	color: #000000;
+	padding: 16px;
+	text-align: right;
+}
+#calculator-screen #calcText:focus {
+	outline: none;
+}
+#calculator-screen #buttons {
+	table-layout: fixed;
+	text-align: center;
+}
+#calculator-screen .btn {
+	text-align: center;
+	display: inline-block;
+	height: 3.6em;
+	width: 3.6em;
+	line-height: 1.2em;
+	padding: 16px;
+	box-sizing: border-box;
+	font-family: sans-serif;
+	font-size: 24px;
+	border: 2px outset buttonface;
+	background-color: buttonface;
+	cursor: default;
+}
+#calculator-screen .btn:active {
+	border: 2px inset buttonface;
+}
+#calculator-screen #buttons td {
+	text-align: center;
+}
+#calculator-screen.red #buttons {
+	background-color: #660000;
+	border: 3px solid #FF0000;
+	border-radius: 32px;
+	padding: 16px;
+}
+#calculator-screen.red #calcText {
+	border: 3px solid #FF0000;
+	border-radius: 16px;
+	margin-bottom: 24px;
+	margin-top: 8px;
+	background-color: #660000;
+	color: #FFFFFF;
+}
+#calculator-screen.red .btn {
+	background-color: #660000;
+	color: #FFFFFF;
+	border-radius: 50%;
+	border: 3px solid #FF0000;
+	box-sizing: content-box;
+	text-align: center;
+	vertical-align: inherit;
+	font-family: monospace;
+	padding: 16px 0px;
+	width: 64px;
+	height: 32px;
+	margin-bottom: 8px;
+}
+#calculator-screen.red .btn:active {
+	background-color: #FF0000;
+	border: 3px solid #FF0000;
+}
+#calculator-screen.blue #buttons {
+	border: 3px outset #3399CC;
+	padding: 8px;
+	border-radius: 12px;
+	background-color: #CCCCFF;
+}
+#calculator-screen.blue #calcText {
+	border: 3px inset #0000FF;
+	border-radius: 16px;
+	margin: 8px;
+	background-color: #000099;
+	color: #00CCFF;
+	width: calc(100% - 16px)
+}
+#calculator-screen.blue .btn {
+	border: 3px outset #3399CC;
+	border-radius: 25%;
+	margin: 8px 4px;
+	padding: 16px 0px;
+	width: 64px;
+	height: 32px;
+	box-sizing: content-box;
+	background-color: #339999;
+	color: #FFFFFF;
+}
+#calculator-screen.blue .btn:active {
+	border: 3px inset #3399CC;
+}

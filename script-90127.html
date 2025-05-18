@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="javascripts/jq.js"></script>
+<script>
+window.onload = function () {
+	var color = rgb(0,102,204);
+	document.getElementById('can').getContext('2d').fillStyle = color;
+	document.getElementById('can').getContext('2d').fillRect(0,0,20,20);
+	document.getElementById('result').innerHTML = color + ' = rgb(' + to_rgb(color).red + ',' + to_rgb(color).green + ',' + to_rgb(color).blue + ')';
+}
+</script>
+<title>Untitled Document</title>
+</head>
+
+<body>
+<canvas id="can" width="20" height="20"></canvas>
+<div id="result"></div>
+</body>
+</html>

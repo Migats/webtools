@@ -1,0 +1,456 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+</head>
+
+<body bgcolor="#000000">
+<canvas id="gameCanvas"></canvas>
+<script>
+	DOM = {
+		parseFromString: (new DOMParser()).parseFromString,
+		serializeToString: (new XMLSerializer()).serializeToString,
+		constructor: DOMParser
+	}
+	Number.prototype.degToRad = function () {return this*Math.PI/180};
+	Number.prototype.radToDeg = function () {return this*180/Math.PI};
+	function rgb(red,green,blue) {
+		var rr = Math.round(red);
+		var gg = Math.round(green);
+		var bb = Math.round(blue);
+		rr = Math.max(Math.min(rr,255),0);
+		gg = Math.max(Math.min(gg,255),0);
+		bb = Math.max(Math.min(bb,255),0);
+		return rr*65536 + gg*256 + bb;
+	}
+	function ArrayObject(length) {
+		if (arguments.length>1||isNaN(length)&&length.constructor!=Array) {
+			for (var i=0;i<arguments.length;i++) {
+				this[i] = arguments[i];
+			}
+			this.length = arguments.length;
+		} else if (isNaN(length)) {
+			for (var i=0;i<length.length;i++) {
+				this[i] = length[i];
+			}
+			this.length = length.length
+		} else {
+			for (var i=0;i<length;i++) {
+				this[i] = undefined;
+			}
+			this.length = length;
+		}
+	}
+	ArrayObject.prototype.item = function (n) {if (!isNaN(n)) {return this[n]}};
+	ArrayObject.prototype.constructor = ArrayObject;
+	function Sprite(encodedData,width,height,subimages,pointX,pointY) {
+		this.image = atodata(encodedData,width,height);
+		this.subimages = subimages;
+		this.pointX = pointX;
+		this.pointY = pointY;
+		this.source = /^[+\/-9A-Za-z]+=?=?$/i.test(encodedData) ? "data:image/plain;base64," + encodedData : encodedData;
+	}
+	Sprite.prototype.constructor = Sprite;
+	Sprite.prototype.toXMLDocument = function () {
+		var xmlvalue = DOM.parseFromString("<sprite></sprite>","application/xml");
+		var elImageRoot = xmlvalue.createElement("image");
+		elImageRoot.setAttribute("src",this.source);
+		elImageRoot.setAttribute("width",this.image.width);
+		elImageRoot.setAttribute("height",this.image.height);
+		for (var i=0;i<this.subimages;i++) {
+			var elImageSub = xmlvalue.createElement("subimage");
+			elImageSub.setAttribute("x",0);
+			elImageSub.setAttribute("y",i*this.width/this.subimages);
+			elImageSub.setAttribute("width",this.width);
+			elImageSub.setAttribute("height",this.height/this.subimages);
+			elImageRoot.appendChild(elImageSub);
+		}
+		xmlvalue.documentElement.appendChild(elImageRoot);
+		var elPointRoot = xmlvalue.createElement("imagePoint");
+		elPointRoot.setAttribute("x",this.pointX);
+		elPointRoot.setAttribute("y",this.pointY);
+		xmlvalue.documentElement.appendChild(elPointRoot);
+		return xmlvalue
+	}
+	Sprite.prototype.toString = function () {return DOM.serializeToString(this.toXMLDocument())};
+	function Mask(imagedata,maxalpha,pointX,pointY,type,dirtyX,dirtyY,dirtyWidth,dirtyHeight) {
+		this.data = new ArrayObject(imagedata.width*imagedata.height);
+		this.width = imagedata.width;
+		this.height = imagedata.height;
+		this.pointX = pointX;
+		this.pointY = pointY;
+		var centerX = (dirtyX||0) + (dirtyWidth||this.width-(dirtyX||0))/2;
+		var centerY = (dirtyY||0) + (dirtyHeight||this.height-(dirtyY||0))/2;
+		for (var i=0;i<this.data.length;i++) {
+			var xpos = i%imagedata.width;
+			var ypos = i-xpos;
+			ypos/=imagedata.width;
+			switch (type) {
+				case "rect":
+				case 1:
+					this.data[i] = xpos>(dirtyX||0) && xpos<(dirtyX||0)+(dirtyWidth||imagedata.width) && ypos>dirtyY && ypos<dirtyY+dirtyHeight;
+				break;
+				case "ellipse":
+				case 2:
+					var dxpos = xpos*2/(dirtyWidth||this.width-(dirtyX||0));
+					var dypos = ypos*2/(dirtyHeight||this.height-(dirtyY||0));
+					dxpos-=centerX;
+					dypos-=centerY;
+					this.data[i]=1>=dxpos*dxpos+dypos*dypos;
+				break;
+				case "diamond":
+				case 3:
+					var dxpos = xpos*2/(dirtyWidth||this.width-(dirtyX||0));
+					var dypos = ypos*2/(dirtyHeight||this.height-(dirtyY||0));
+					dxpos-=centerX;
+					dypos-=centerY;
+					this.data[i]=1>=dxpos+dypos;
+				break;
+				default:
+					this.data[i]=imagedata.data[i*4+3]>maxalpha*255 && xpos>(dirtyX||0) && xpos<(dirtyX||0)+(dirtyWidth||imagedata.width) && ypos>dirtyY && ypos<dirtyY+dirtyHeight;
+			}
+		}
+	}
+	Mask.fromSprite = function (sprite,maxalpha,subimages) {
+		if (arguments.length>2) {
+			return new Mask(sprite.image,maxalpha,sprite.pointX,sprite.pointY,0,0,sprite.height*subimage/sprite.subimages,sprite.width,sprite.height/sprite.subimages);
+		} else {
+			var maskobj = new Mask(sprite.image,maxalpha,sprite.pointX,sprite.pointY,0,0,0,sprite.width,sprite.height/sprite.subimages);
+			for (var i=1;i<sprite.subimages;i++) {
+				var maskobj2 = new Mask(sprite.image,maxalpha,sprite.pointX,sprite.pointY,0,0,sprite.height*i/sprite.subimages,sprite.width,sprite.height/sprite.subimages);
+				for (var j=0;j<maskobj.data.length;j++) {
+					maskobj.data[j] = maskobj.data[j]||maskobj2.data[j];
+				}
+			}
+			return maskobj;
+		}
+	}
+	Mask.prototype.constructor = Mask;
+	function GameObject(sprite,mask,visible,solid) {
+		this.sprite = sprite;
+		this.mask = mask;
+		this.solid = Boolean(solid);
+		this.visible = Boolean(visible) || typeof visible == "undefined";
+		if (arguments.length<2) {
+			this.mask = Mask.fromSprite(sprite,0);
+		}
+		this.instances = new ArrayObject(0);
+		this.alarmEvent = this.startEvent = this.stepEvent = this.drawEvent = this.stopEvent = null;
+	}
+	GameObject.prototype.constructor = GameObject;
+	GameObject.prototype.valueOf = function () {
+	}
+	function ObjectInstance(object,area,x,y) {
+		this.x = x;
+		this.y = y;
+		this.sprite = object.sprite;
+		this.mask = object.mask;
+		this.parent = object;
+		this.visible = object.visible;
+		this.solid = object.solid;
+		this.alarm = new ArrayObject(0);
+		this.subimage = this.hspeed = this.vspeed = this.speed = this.direction = this.angle = 0;
+		this.onalarm = object.alarmEvent;
+		this.onstart = object.startEvent;
+		this.onstep = object.stepEvent;
+		this.ondraw = object.drawEvent;
+		this.onbeforestopevent = object.stopEvent;
+		this.area = area;
+		this.xscale = 1;
+		this.yscale = 1;
+		this.color = 16777215;
+		this.alpha = 1;
+		this.instanceID = area.objects.length;
+		this.objectNumber = object.instances.length;
+		area.objects.length++;
+		area.objects[area.objects.length-1] = this;
+		object.instances.length++;
+		object.instances[object.instances.length-1] = this;
+	}
+	ObjectInstance.prototype = {
+		constructor: ObjectInstance,
+		drawself: function () {
+			this.area.ctx.drawSpriteExt(this.sprite,this.subimage,this.x,this.y,this.xscale,this.yscale,this.angle,this.color,this.alpha);
+		},
+		checkCollision: function (object) {
+			var left1 = this.x - this.mask.pointX;
+			var top1 = this.y - this.mask.pointY;
+			var left2 = object.x - object.mask.pointX;
+			var top2 = object.y - object.mask.pointY;
+			if (left1+this.mask.width<left2 && left2+object.mask.width<left1 && top1+this.mask.height<top2 && top2+object.mask.height<top1) {
+				var sliceLeft1 = Math.max(left2-left1,0);
+				var sliceTop1 = Math.max(top2-top1,0);
+				var sliceLeft2 = Math.max(left1-left2,0);
+				var sliceTop2 = Math.max(top1-top2,0);
+				var bol = false;
+				for (var i=0;i < (this.mask.width+object.mask.width-Math.max(sliceLeft1,sliceLeft2))*(this.mask.height+object.mask.height-Math.max(sliceLeft1,sliceLeft2));i++) {
+					var x1 = i%this.mask.width-sliceLeft2;
+					var x2 = i%object.mask.width-sliceLeft1;
+					var y1 = Math.floor(i/this.mask.width)-sliceTop2;
+					var y2 = Math.floor(i/object.mask.width)-sliceTop1;
+					if (Math.max(x1,y1,x2,y2)>=0) {
+						
+					}
+				}
+				return bol;
+			} else {return false};
+		},
+		removeInstance: function () {
+			var area = this.area;
+			var object = this.object
+			for (var i=this.instanceID;i<area.objects;i++) {
+				area.objects[i] = area.objects[i+1] || undefined;
+			}
+			area.objects[i].length--;
+			for (var i=this.objectNumber;i<object.instances.length;i++) {
+				object.instances[i] = object.instances[i+1] || undefined;
+			}
+			area.objects[i].length--;
+		}
+	}
+	CanvasRenderingContext2D.prototype.blendImageData = function (imagedata,dx,dy,dirtyX,dirtyY,dirtyWidth,dirtyHeight) {
+		var crcanvas = document.createElement("canvas");
+	    crcanvas.width = dirtyWidth || imagedata.width-(dirtyX||0);
+	    crcanvas.height = dirtyHeight || imagedata.height-(dirtyY||0);
+	    crcanvas.getContext("2d").putImageData(imagedata,-dirtyX||0,-dirtyY||0);
+	    var img = new Image();
+	    img.src = crcanvas.toDataURL("image/png");
+		crcanvas.getContext("2d").clearRect(0,0,crcanvas.width,crcanvas.height);
+	    this.drawImage(img,dx+(dirtyX||0),dy+(dirtyY||0));
+	}
+	CanvasRenderingContext2D.prototype.drawSprite = function (sprite,subimage,x,y) {
+		blendImageData(sprite.image,x-sprite.pointX,y-sprite.pointY,0,subimage*sprite.image.height/sprite.subimages,sprite.image.width,sprite.image.height/sprite.subimages);
+	}
+	CanvasRenderingContext2D.prototype.drawSpriteExt = function (sprite,subimage,x,y,xscale,yscale,angle,color,alpha) {
+		var imgdat = new ImageData(sprite.image.width*xscale,sprite.image.height*yscale);
+		var crcanvas = document.createElement("canvas");
+		crcanvas.width = sprite.image.width;
+		crcanvas.height = sprite.image.height;
+		crcanvas.getContext("2d").putImageData(sprite.image,0,0);
+		for (var i=0;i<imgdat.data.length;i+=4) {
+			var xpos = i/4;
+			xpos%=imgdat.width;
+			var ypos = i/4;
+			ypos-=xpos;
+			ypos/=imgdat.width;
+			imgdat[i] = crcanvas.getContext("2d").getImageData(Math.floor(xpos/xscale),Math.floor(ypos/yscale),1,1)[0];
+			imgdat[i]*=Math.floor(color/65536)%256;
+			imgdat[i+1] = crcanvas.getContext("2d").getImageData(Math.floor(xpos/xscale),Math.floor(ypos/yscale),1,1)[1];
+			imgdat[i+1]*=Math.floor(color/256)%256;
+			imgdat[i+2] = crcanvas.getContext("2d").getImageData(Math.floor(xpos/xscale),Math.floor(ypos/yscale),1,1)[2];
+			imgdat[i+2]*=Math.floor(color)%256;
+			imgdat[i+3] = crcanvas.getContext("2d").getImageData(Math.floor(xpos/xscale),Math.floor(ypos/yscale),1,1)[3];
+			imgdat[i+3]*=Math.floor(alpha*255);
+		}
+		crcanvas.getContext("2d").clearRect(0,0,crcanvas.width,crcanvas.height);
+		this.translate(x-sprite.pointX*xscale,y-sprite.pointY*yscale);
+		this.rotate(-angle.degToRad());
+		this.blendImageData(imgdat,0,0,0,subimage*imgdat.height/sprite.subimages,imgdat.width,imgdat.height/sprite.subimages);
+		this.rotate(angle.degToRad());
+		this.translate(-(x-sprite.pointX*xscale),-(y-sprite.pointY*yscale));
+	}
+	function GameArea(obj) {for (var i in obj) {this[i] = obj[i]}};
+	GameArea.prototype.constructor = GameArea;
+	var gameArea = {
+		width: 1600,
+		height: 960,
+		viewX: 0,
+		viewY: 0,
+		resources: {sprites:{},masks:{},images:{},objects:{}},
+		hover:false,
+		constructor:GameArea,
+		mouseButtons:0,
+		keyButtons:0,
+		followingObject:null,
+		moveView: function (x,y) {
+			ctx.translate(this.viewX-x,this.viewY-y);
+			this.viewX = x;
+			this.viewY = y;			
+		},
+		ctx:document.getElementById("gameCanvas").getContext("2d"),
+		objects:new ArrayObject(0),
+		start: function () {
+			this.ctx.canvas.width = 640;
+			this.ctx.canvas.height = 360;
+			event = new UIEvent("start",{view:window});
+			setInterval(function() {gameArea.step()},1);
+			if (typeof this.onstart == "function") {
+				this.onstart(event);
+			}
+		},
+		step: function () {
+			this.clear();
+			if (this.followingObject) {
+				this.moveView(this.followingObject.x,this.followingObject.y);
+			}
+			for (var i=0;i<this.objects.length;i++) {
+				var cc = this.objects[i];
+				cc.subimage++;
+				cc.subimage%=cc.sprite.subimages;
+				cc.x += cc.hspeed;
+				cc.y += cc.vspeed;
+				cc.x += cc.speed * Math.cos(cc.direction.degToRad());
+				cc.y += cc.speed * Math.sin(cc.direction.degToRad());
+				for (var j=0;j<this.objects.length;j++) {
+					if (cc.checkCollision(this.objects[j]) && this.objects[j].solid && this.objects[j] != cc) {
+						event = new UIEvent("collision",{view:window});
+						cc.x -= cc.hspeed;
+						cc.y -= cc.vspeed;
+						cc.x -= cc.speed * Math.cos(cc.direction.degToRad());
+						cc.y -= cc.speed * Math.sin(cc.direction.degToRad());
+						cc.oncollision(event);
+						cc.x += cc.hspeed;
+						cc.y += cc.vspeed;
+						cc.x += cc.speed * Math.cos(cc.direction.degToRad());
+						cc.y += cc.speed * Math.sin(cc.direction.degToRad());
+					}
+				}
+				cc.direction%=360;
+				for (var j=0;j<cc.alarm.length;j++) {
+					if (alarm[j] === 0) {
+						event = new UIEvent("alarm",{view:window});
+						event.alarm = j;
+						alarm-=alarm>-1;
+						cc.alarm(event);
+					}
+					alarm-=alarm>-1;
+				}
+				event = new UIEvent("step",{view:window});
+				if (typeof cc.onstep == "function") {
+					cc.onstep(event);
+				}
+				if (cc.visible) {
+					event = new UIEvent("draw",{view:window});
+					if (typeof cc.ondraw == "function") {
+						cc.ondraw(event);
+					} else {
+						cc.drawself();
+					}
+				}
+			}
+		},
+		clear: function () {
+			this.ctx.clearRect(this.viewX,this.viewY,this.ctx.canvas.width,this.ctx.canvas.height);
+		}
+	};
+	gameArea.ctx.canvas.addEventListener("mousemove",function (event) {
+		gameArea.mouseButtons = event.buttons;
+		gameArea.mouseX = event.offsetX + gameArea.viewX;
+		gameArea.mouseY = event.offsetY + gameArea.viewY;
+		gameArea.hover = true;
+		gameArea.windowMouseX = event.offsetX;
+		gameArea.windowMouseY = event.offsetY;
+		if (typeof gameArea.onmousemove == "function") {
+			gameArea.onmousemove(event);
+		}
+	},true);
+	gameArea.ctx.canvas.addEventListener("mouseout",function (event) {
+		gameArea.mouseButtons = 0;
+		gameArea.mouseX = event.offsetX + gameArea.viewX;
+		gameArea.mouseY = event.offsetY + gameArea.viewY;
+		gameArea.hover = false;
+		gameArea.windowMouseX = event.offsetX;
+		gameArea.windowMouseY = event.offsetY;
+		if (typeof gameArea.onmouseout == "function") {
+			gameArea.onmouseout(event);
+		}
+	},true);
+	gameArea.ctx.canvas.addEventListener("mouseover",function (event) {
+		gameArea.mouseButtons = event.buttons;
+		gameArea.mouseX = event.offsetX + gameArea.viewX;
+		gameArea.mouseY = event.offsetY + gameArea.viewY;
+		gameArea.hover = true;
+		gameArea.windowMouseX = event.offsetX;
+		gameArea.windowMouseY = event.offsetY;
+		event.clientX = event.offsetX = event.layerX = gameArea.mouseX;
+		event.clientY = event.offsetY = event.layerY = gameArea.mouseY;
+		event.view = gameArea;
+		if (typeof gameArea.onmouseover == "function") {
+			gameArea.onmouseover(event);
+		}
+		if (typeof gameArea.onmousedown == "function" && event.buttons>0) {
+			gameArea.onmousedown(event);
+		}
+	},true);
+	gameArea.ctx.canvas.addEventListener("mousedown",function (event) {
+		gameArea.mouseButtons = event.buttons;
+		event.clientX = event.offsetX = event.layerX = gameArea.mouseX;
+		event.clientY = event.offsetY = event.layerY = gameArea.mouseY;
+		event.view = gameArea;
+		if (typeof gameArea.onmousedown == "function") {
+			gameArea.onmousedown(event);
+		}
+	},true);
+	gameArea.ctx.canvas.addEventListener("mouseup",function (event) {
+		gameArea.mouseButtons = event.buttons;
+		event.clientX = event.offsetX = event.layerX = gameArea.mouseX;
+		event.clientY = event.offsetY = event.layerY = gameArea.mouseY;
+		event.view = gameArea;
+		// When the mouse is outside the canvas, the mouseX will not change
+		if (typeof gameArea.onmouseup == "function") {
+			gameArea.onmouseup(event);
+		}
+	},true);
+	gameArea.ctx.canvas.addEventListener("click",function (event) {
+		gameArea.mouseButtons = event.buttons;
+		event.clientX = event.offsetX = event.layerX = gameArea.mouseX;
+		event.clientY = event.offsetY = event.layerY = gameArea.mouseY;
+		event.view = gameArea;
+		// When the mouse is outside the canvas, the mouseX will not change
+		if (typeof gameArea.onclick == "function") {
+			gameArea.onclick(event);
+		}
+	},true);
+	window.addEventListener("keydown",function (event) {
+		var bincode = 1;
+		for (var i=0;i<event.keyCode;i++) {bincode*=2};
+		gameArea.keyButtons+=bincode;
+		if (typeof gameArea.onkeydown == "function") {gameArea.onkeydown}
+	});
+	function atodata(encodedData,width,height) {
+		var img = new Image();
+		if (/(?!==?$)[^+\/-9A-Za-z]/.test(encodedData))
+		if (atob(encodedData).substr(0,12) == "\x89PNG\r\n\x1a\n\0\0\0\r") {
+			img.src = "data:image/png;base64," + encodedData;
+		} else if (atob(encodedData).substr(0,21) == "\xff\xd8\xff\xe0\0\nJFIF\0\x01\x01\0\0\x01\0\x01\0\0\xff") {
+			img.src = "data:image/jpeg;base64," + encodedData;
+		} else if (atob(encodedData).substr(0,11) == "GIF89a \0\0\ufffd\ufffd") {
+			img.src = "data:image/gif;base64," + encodedData;
+		} else if (/^RIFF[\s\S]{0,8}WEBPVP8X\n/.test(atob(encodedData))) {
+			img.src = "data:image/webp;base64," + encodedData;
+		} else if (/<svg[^A-Za-z0-9_\-=!\?&:]/i.test(atob(encodedData))) {
+			img.src = "data:image/svg+xml;base64," + encodedData;
+		}
+		if (arguments.length>1) {img.width = width};
+		if (arguments.length>2) {img.height = height};
+		var crcanvas = document.createElement("canvas");
+		crcanvas.width = img.width || img.naturalWidth || img.clientWidth || img.offsetWidth;
+		crcanvas.height = img.height || img.naturalHeight || img.clientHeight || img.offsetHeight;
+		try {
+			crcanvas.getContext("2d").drawImage(img,0,0);
+			return crcanvas.getContext("2d").getImageData(0,0,crcanvas.width,crcanvas.height);
+		} catch (err) {
+			throw err;
+		} finally {
+			crcanvas.getContext("2d").clearRect(0,0,crcanvas.width,crcanvas.height);
+		}
+	}
+//------------------------------------------------------------------------
+// All images
+gameArea.ctx = document.getElementById("gameCanvas").getContext("2d");
+gameArea.resources.images.smiledown = "PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbG5zOmV2PSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL3htbC1ldmVudHMiIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGNpcmNsZSBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0iI0ZGRkYwMCIgY3g9IjE2IiBjeT0iMTYiIHI9IjEzIiAvPjxjaXJjbGUgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9IiNGRkZGRkYiIGN4PSIxMC41IiBjeT0iMTAuNSIgcj0iMyIgLz48Y2lyY2xlIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSIjRkZGRkZGIiBjeD0iMjAuNSIgY3k9IjEwLjUiIHI9IjMiIC8+PGNpcmNsZSBmaWxsPSIjMDAwMDAwIiBjeD0iMTEiIGN5PSIxMSIgcj0iMSIgLz48Y2lyY2xlIGZpbGw9IiMwMDAwMDAiIGN4PSIyMSIgY3k9IjExIiByPSIxIiAvPjxlbGxpcHNlIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSIjRkYwMDAwIiBjeD0iMTUuNSIgY3k9IjIxIiByeD0iNy41IiByeT0iNC41IiAvPjwvc3ZnPg==";
+gameArea.resources.images.smileup = "PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbG5zOmV2PSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL3htbC1ldmVudHMiIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGNpcmNsZSBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0iI0ZGRkYwMCIgY3g9IjE2IiBjeT0iMTYiIHI9IjEzIiAvPjwvc3ZnPg==";
+gameArea.resources.images.smileleft = "PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbG5zOmV2PSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL3htbC1ldmVudHMiIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGNpcmNsZSBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0iI0ZGRkYwMCIgY3g9IjE2IiBjeT0iMTYiIHI9IjEzIiAvPjxjaXJjbGUgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9IiNGRkZGRkYiIGN4PSIxMC41IiBjeT0iMTAuNSIgcj0iMyIgLz48Y2lyY2xlIGZpbGw9IiMwMDAwMDAiIGN4PSIxMCIgY3k9IjExIiByPSIxIiAvPjxwYXRoIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBmaWxsPSIjRkYwMDAwIiBkPSJNMywxNS41IEExMCw4IDAgMCwxIDEwLDI3LjUgQTEzLDEzIDAgMCwxIDMsMTUuNSBaIiAvPjwvc3ZnPg==";
+gameArea.resources.images.smileright = "PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbG5zOmV2PSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL3htbC1ldmVudHMiIHZpZXdCb3g9IjAgMCAzMiAzMiI+PGNpcmNsZSBzdHJva2U9IiMwMDAwMDAiIHN0cm9rZS13aWR0aD0iMSIgZmlsbD0iI0ZGRkYwMCIgY3g9IjE2IiBjeT0iMTYiIHI9IjEzIiAvPjxjaXJjbGUgc3Ryb2tlPSIjMDAwMDAwIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9IiNGRkZGRkYiIGN4PSIyMS41IiBjeT0iMTAuNSIgcj0iMyIgLz48Y2lyY2xlIGZpbGw9IiMwMDAwMDAiIGN4PSIyMiIgY3k9IjExIiByPSIxIiAvPjxwYXRoIHN0cm9rZT0iIzAwMDAwMCIgc3Ryb2tlLXdpZHRoPSIxIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBmaWxsPSIjRkYwMDAwIiBkPSJNMjksMTUuNSBBMTAsOCAwIDAsMCAyMiwyNy41IEExMywxMyAwIDAsMCAyOSwxNS41IFoiIC8+PC9zdmc+";
+gameArea.resources.images.forestbackground = "PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHhtbG5zOmV2PSJodHRwOi8vd3d3LnczLm9yZy8yMDAxL3htbC1ldmVudHMiIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHJlY3QgZmlsbD0iIzk5OTk5OSIgeD0iMCIgeT0iMCIgd2lkdGg9IjY0IiBoZWlnaHQ9IjY0IiAvPjxwYXRoIGZpbGw9IiMwMDAwMDAiIG9wYWNpdHk9Ii43IiBkPSJNMzIsMCBINjQgVjMyIEgwIFY2NCBIMzIgWiIgLz48L3N2Zz4=";
+gameArea.resources.sprites.smileup = new Sprite(gameArea.resources.images.smile_up,32,32,1,16,16);
+gameArea.resources.sprites.smiledown = new Sprite(gameArea.resources.images.smile_down,32,32,1,16,16);
+gameArea.resources.sprites.smileleft = new Sprite(gameArea.resources.images.smile_left,32,32,1,16,16);
+gameArea.resources.sprites.smileright = new Sprite(gameArea.resources.images.smile_right,32,32,1,16,16);
+gameArea.resources.objects.player = new GameObject(gameArea.resources.sprites.smiledown,Mask.fromSprite(gameArea.resources.sprites.smiledown,.7),true,false);
+var player = new ObjectInstance(gameArea.resources.objects.player,gameArea,48,48);
+window.addEventListener("load",function(){gameArea.start()},true);
+</script>
+</body>
+</html>

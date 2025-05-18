@@ -1,0 +1,169 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+<script>
+var keyCode = 0, keycode = 0, loco = 0, ins = 0, all_chars = '0123456789-------ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+window.onload = function (event2) {
+	var Result = document.getElementById('code');
+	var kyname = document.getElementById('name');
+	var locate = document.getElementById('locate');
+	var insRes = document.getElementById('Inserting');
+	document.getElementById('Key').onkeydown = function (event) {
+		loco = event.location || '';
+		keyCode = event.keyCode || '';
+		Result.innerHTML = 'Keycode: ' + keyCode;
+		if (keyCode === 13) {
+			char = 'Enter';
+		} else if (keyCode === 111) {
+			char = 'Divide';
+		} else if (keyCode === 110) {
+			char = 'Decimal-point';
+		} else if (keyCode === 106) {
+			char = 'Multiply';
+		} else if (keyCode === 109) {
+			char = 'Subtrackt';
+		} else if (keyCode === 107) {
+			char = 'Add';
+		} else if (keyCode === 144) {
+			char = 'Numlock';
+		} else if (keyCode === 145) {
+			char = 'Scroll-lock';
+		} else if (keyCode === 20) {
+			char = 'Capslock';
+		} else if (keyCode === 32) {
+			char = 'Space';
+		} else if (keyCode === 37) {
+			char = 'Arrow-left';
+		} else if (keyCode === 38) {
+			char = 'Arrow-up';
+		} else if (keyCode === 39) {
+			char = 'Arrow-right';
+		} else if (keyCode === 40) {
+			char = 'Arrow-down';
+		} else if (keyCode === 45) {
+			char = 'Insert';
+		} else if (keyCode === 46) {
+			char = 'Delete';
+		} else if (keyCode >= 96 && keyCode <= 105) {
+			char = 'Num-' + (keyCode - 96);
+		} else if (keyCode === 91) {
+			char = 'Left-windows';
+		} else if (keyCode === 92) {
+			char = 'Right-windows';
+		} else if (keyCode === 16) {
+			char = 'Shift';
+		} else if (keyCode === 17) {
+			char = 'Ctrl';
+		} else if (keyCode === 18) {
+			char = 'Alt';
+		} else if (keyCode === 19) {
+			char = 'Pause';
+		} else if (keyCode === 93) {
+			char = 'Select';
+		} else if (keyCode === 27) {
+			char = 'Escape';
+		} else if (keyCode === 8) {
+			char = 'Backspace';
+		} else if (keyCode === 33) {
+			char = 'Page-up';
+		} else if (keyCode === 34) {
+			char = 'Page-down';
+		} else if (keyCode === 35) {
+			char = 'End';
+		} else if (keyCode === 36) {
+			char = 'Home';
+		} else if (keyCode >= 112 && keyCode <= 123) {
+			char = 'F' + (keyCode - 111);
+		} else if (keyCode === 9) {
+			char = 'Tab';
+		} else if (keyCode === 186) {
+			char = 'Semi-colon';
+		} else if (keyCode === 187) {
+			char = 'Equal-sign';
+		} else if (keyCode === 188) {
+			char = 'Comma';
+		} else if (keyCode === 189) {
+			char = 'Dash';
+		} else if (keyCode === 190) {
+			char = 'Dot';
+		} else if (keyCode === 191) {
+			char = 'Slash';
+		} else if (keyCode === 222) {
+			char = 'Quote';
+		} else if (keyCode === 192) {
+			char = 'Grave-accent';
+		} else if (keyCode === 219) {
+			char = 'Open-bracket';
+		} else if (keyCode === 221) {
+			char = 'Close-bracket';
+		} else if (keyCode === 220) {
+			char = 'Backslash'
+		} else {
+			var char = all_chars.charAt(keyCode - 48);
+		}
+		var char_comment = ' (' + char + '-key)';
+		if (char_comment == ' (-key)') {
+			this.value = 'Unknow';
+			Result.style.color = '#f00';
+		} else {
+			Result.innerHTML += char_comment;
+			Result.style.color = '#0f0';
+			this.value = char;
+		}
+		locate.innerHTML = 'Keylocation: ' + (loco || 0) + ' (' + ((loco === 1) ? 'lefthotkeybase' : (loco === 2) ? 'righthotkeybase' : (loco === 3) ? 'numpad' : 'qwerty') + ')';
+		locate.style.color = '#0f0';
+		insRes.innerHTML = 'Inserting: (none)';
+		insRes.style.color = '#f00';
+	}
+	document.getElementById('Key').onkeypress = function (event) {
+		ins = event.which || event.keyCode;
+		var insResult = 'Inserting: ' + ((ins === 13) ? 'Line-break' : ('<q style="quotes: \'\u201c\' \'\u201d\'">' + String.fromCharCode(ins).replace(/[\u2018|\u2019]/,"'").replace(/[\u201c|\u201d]/,'"') + '</q>')) + ' (Unicode: U+' + ins.toString(16).toUpperCase() + ')';
+		insRes.innerHTML = insResult;
+		insRes.style.color = (String.fromCharCode(ins)) ? '#0f0' : '#f00';
+	}
+	document.getElementById('Clear').onclick = function () {
+		document.getElementById('Key').value = '';
+		Result.innerHTML = '&nbsp;';
+		locate.innerHTML = '&nbsp;';
+		insRes.innerHTML = '&nbsp;';
+	}
+}
+</script>
+<style>
+	#Results {
+		background-color: #006;
+		border: #FFF solid 2px;
+		outline: #000 solid 1px;
+		padding: 2px 4px;
+		font-family: sans-serif;
+		font-weight: 600;
+		float: left;
+		min-width: 140px;
+		color: #FFF;
+		margin-left: 1px;
+		margin-top: 1px;
+	}
+	#Key, #Clear {
+		font-family: sans-serif;
+		font-weight: 600;
+	}
+	#Key:focus {
+		outline-color: #006;
+	}
+</style>
+</head>
+
+<body>
+<input type="text" id="Key" placeholder="Press a key" readonly />
+<input type="button" name="Clear" id="Clear" value="Clear">
+<br>
+<div id="Results">
+	<span id="code"></span><br>
+	<span id="name"></span><br>
+	<span id="locate"></span><br>
+	<span id="Inserting"></span><br>
+</div>
+</body>
+</html>

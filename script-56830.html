@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+<style>
+body {
+	font-family: "MS Sans Serif", sans-serif;
+	font-size: 12px;
+}
+.tab_menu ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	position: relative;
+}
+.tab_menu ul li {
+	border: 1px outset #CCCCCC;
+	border-top-left-radius: 3px;
+	border-top-right-radius: 3px;
+	display: inline-block;
+	padding: 1px 0;
+}
+.tab_menu ul li a {
+	border-bottom: 2px solid transparent;
+	color: #0000FF;
+	display: inline-block;
+	padding: 4px 3px 2px;
+	text-decoration: inherit;
+}
+.tab_menu ul li:target a {
+	border-color: #FF9900;
+}
+.tab_menu ul li .tab_content {
+	border: 1px inset #CCCCCC;
+	display: none;
+	left: 0;
+	padding: 8px;
+	position: absolute;
+	right: 0;
+	top: 100%;
+}
+.tab_menu ul li:target .tab_content {
+	display: block;
+}
+input, textarea, select, button {
+	font-family: inherit;
+	font-size: inherit;
+}
+</style>
+<script>
+window.addEventListener("load",function () {
+	var el = document.querySelectorAll('input[id^="allow-"]');
+	for (var i=0;i<el.length;i++) {
+		var elchange = function () {
+			var el2 = document.getElementById(this.id.replace(/^allow-/,""));
+			var el3 = document.getElementById("select-" + this.id.replace(/^allow-/,""));
+			el2.disabled = !this.checked;
+			if (el3) {el3.disabled = el2.disabled};
+			if (el2.attributes["data-input-type"]) {
+				el2.type = this.checked ? el2.attributes["data-input-type"].value : "text";
+			}
+			if (el2.disabled) {el2.value = el2.defaultValue};
+		}
+		el[i].addEventListener("change",elchange);
+		elchange.call(el[i]);
+	}
+});
+</script>
+</head>
+
+<body>
+<div class="tab_menu">
+	<ul>
+    	<li id="-tab-font">
+        	<a href="#-tab-font">Fonts and colors</a>
+            <form class="tab_content">
+				<table width="100%">
+					<tr>
+						<td><input name="allow-font-family" type="checkbox" id="allow-font-family" value="true"> Font family: <input name="font-family" id="font-family" type="text" value="initial"> <input name="select-font-family" type="button" id="select-font-family" value="Select font"></td>
+						<td><input name="allow-color" type="checkbox" id="allow-color" value="true">Color: <input name="color" type="text" id="color" value="#000000" data-input-type="color"></td>
+					</tr>
+					<tr>
+						<td><input name="allow-font-weight" type="checkbox" id="allow-font-weight" value="true"> Font weight: <select name="font-weight" id="font-weight">
+						  <option value="100">100 (Thin)</option>
+						  <option value="200">200 (Extra-light)</option>
+						  <option value="300">300 (Light)</option>
+						  <option value="400" selected>400 (Regular)</option>
+						  <option value="500">500 (Medium)</option>
+						  <option value="600">600 (Semi-bold)</option>
+						  <option value="700">700 (Bold)</option>
+						  <option value="800">800 (Extra-bold)</option>
+						  <option value="900">900 (Black)</option>
+					  </select></td>
+						<td><input id="allow-text-fill-color" type="checkbox" value="true" onChange="document.getElementById(this.id.replace(/^allow-/,'')).value = document.getElementById('color').value"> Text fill color: <input id="text-fill-color" name="text-fill-color" type="text" value="currentColor" data-input-type="color"></td>
+					</tr>
+                    <tr>
+                    	<td>
+                        	
+                        </td>
+                        <td>
+                        	
+                        </td>
+                    </tr>
+				</table>
+            </form>
+        </li>
+    	<li id="-tab-back"><a href="#-tab-back">Backgrounds</a></li>
+    	<li id="-tab-box"><a href="#-tab-box">Box and positions</a></li>
+    	<li id="-tab-bord"><a href="#-tab-bord">Borders</a></li>
+    	<li id="-tab-ext"><a href="#-tab-ext">Extentions</a></li>
+    	<li id="-tab-ani"><a href="#-tab-ani">Animations</a></li>
+	</ul>
+</div>
+</body>
+</html>

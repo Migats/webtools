@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Latex{}</title>
+<script>
+document.createElement("math");
+HTMLScriptElement.prototype.echo = function (text) {
+	this.parentNode.replaceChild(this,document.createTextNode(text));
+}
+window.onload = function () {
+	var mathResult = document.getElementsByTagName("math");
+	for (var i = 0; i < mathResult; i++) {
+		var cMathResult = mathResult[i]
+		var mathText = cMathResult.innerHTML;
+		cMathResult.innerHTML = "";
+		mathNodeText = document.createTextNode(mathText);
+		cMathResult.appendChild(mathNodeText);
+	}
+}
+</script>
+<style>
+math {
+	font-family: "Cambria Math", serif;
+	vertical-align: middle;
+}
+math * {
+	vertical-align: inherit;
+	position: relative;
+}
+</style>
+</head>
+
+<body>
+<math>(4+4=8)</math>
+</body>
+</html>

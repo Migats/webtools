@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button onclick="switchAudio()">Switch Break/Drop</button>
+    <script>
+        let breakLoop = new Audio("others/Running my way (Break only loop).wav");
+        let dropLoop = new Audio("others/Running my way (Drop only loop).wav");
+        breakLoop.loop = true;
+        dropLoop.loop = true;
+        breakLoop.volume = 0.0;
+        dropLoop.volume = 1.0;
+        function switchAudio() {
+            breakLoop.volume = !breakLoop.volume;
+            dropLoop.volume = !breakLoop.volume;
+            if (dropLoop.paused) {
+                breakLoop.play();
+                dropLoop.play();
+                breakLoop.currentTime = 0;
+                dropLoop.currentTime = 0;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Glowtimer</title>
+<style>
+	body {
+		color: var(--currentColor, #00ffff);
+	}
+	canvas {
+		background-color: rgba(0,0,0,.16);
+		position: fixed;
+		bottom: 50%;
+		right: 50%;
+		transform: translate(50%,50%);
+		border-radius: 96px;
+		padding: 8px 32px;
+		opacity: 0.9;
+	}
+	body::before {
+		content: "";
+		display: inline-block;
+		width: 1366px;
+		height: 352px;
+		background-color: currentColor;
+		position: fixed;
+		bottom: 50%;
+		right: 50%;
+		transform: translate(50%,50%);
+		filter: blur(128px);
+	}
+</style>
+<meta charset="utf-8" />
+</head>
+<body>
+<canvas id="canvas" width="1302" height="336">!ERROR: Canvas element support is required.</canvas>
+<audio src="alarm.wav" loop id="alarmsound"></audio>
+<script>
+var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+var alarmsound = document.getElementById("alarmsound");
+if (window.top == window.self) {
+	document.body.style.backgroundColor = "black";
+}
+var start = parseInt(location.hash.slice(1)) * 10;
+if (isNaN(start) || start < 0) start = 0;
+var now = Date.now();
+var final = now + start;
+var clockinterval = setInterval(drawClock, 1000/60);
+function drawClock () {
+	ctx.clearRect(0,0,canvas.width,canvas.height);
+	drawBase(ctx);
+	drawTime(ctx);
+}
+function drawBase(ctx) {
+	ctx.fillStyle = "rgba(255,255,255,.2)"
+	drawDigit(ctx,8);
+	ctx.translate(192,0);
+	drawDigit(ctx,8);
+	ctx.translate(192,0);
+	ctx.fillRect(30,102,24,24);
+	ctx.fillRect(30,198,24,24);
+	ctx.translate(66,0);
+	drawDigit(ctx,8);
+	ctx.translate(192,0);
+	drawDigit(ctx,8);
+	ctx.translate(192,0);
+	ctx.fillRect(30,282,24,24);
+	ctx.translate(66,0);
+	drawDigit(ctx,8);
+	ctx.translate(192,0);
+	drawDigit(ctx,8);
+	ctx.translate(-1092,0);
+}
+function drawTime(ctx) {
+	now = Date.now()
+	var time = Math.max(final - now, 0);
+	if (start === 0) time = now - final;
+	else if (time === 0 && alarmsound.paused) {
+		clearInterval(clockinterval);
+		alarmsound.play();
+	}
+	digits = [
+		Math.floor(time / 600000) % 10,
+		Math.floor(time / 60000) % 10,
+		Math.floor(time / 10000) % 6,
+		Math.floor(time / 1000) % 10,
+		Math.floor(time / 100) % 10,
+		Math.floor(time / 10) % 10
+	];
+	ctx.fillStyle = window.getComputedStyle(document.body).color;
+	drawDigit(ctx,digits[0]);
+	ctx.translate(192,0);
+	drawDigit(ctx,digits[1]);
+	ctx.translate(192,0);
+	if (digits[6] % 1000 < 500) {
+		ctx.fillRect(30,102,24,24);
+		ctx.fillRect(30,198,24,24);
+	}
+	ctx.translate(66,0);
+	drawDigit(ctx,digits[2]);
+	ctx.translate(192,0);
+	drawDigit(ctx,digits[3]);
+	ctx.translate(192,0);
+	ctx.fillRect(30,282,24,24);
+	ctx.translate(66,0);
+	drawDigit(ctx,digits[4]);
+	ctx.translate(192,0);
+	drawDigit(ctx,digits[5]);
+	ctx.translate(-1092,0);
+	ctx.fillStyle = "rgba(255,255,255,0.65)";
+	drawDigit(ctx,digits[0]);
+	ctx.translate(192,0);
+	drawDigit(ctx,digits[1]);
+	ctx.translate(192,0);
+	if (digits[6] % 1000 < 500) {
+		ctx.fillRect(30,102,24,24);
+		ctx.fillRect(30,198,24,24);
+	}
+	ctx.translate(66,0);
+	drawDigit(ctx,digits[2]);
+	ctx.translate(192,0);
+	drawDigit(ctx,digits[3]);
+	ctx.translate(192,0);
+	ctx.fillRect(30,282,24,24);
+	ctx.translate(66,0);
+	drawDigit(ctx,digits[4]);
+	ctx.translate(192,0);
+	drawDigit(ctx,digits[5]);
+	ctx.translate(-1092,0);
+}
+function drawDigit(ctx,dig) {
+	ctx.beginPath();
+	if ([0,4,5,6,8,9].indexOf(dig) > -1) {
+		ctx.moveTo(42,48);
+		ctx.lineTo(30,60);
+		ctx.lineTo(30,150);
+		ctx.lineTo(42,162);
+		ctx.lineTo(54,150);
+		ctx.lineTo(54,60);
+		ctx.closePath();
+	}
+	if ([0,2,3,5,6,7,8,9].indexOf(dig) > -1) {
+		ctx.moveTo(48,42);
+		ctx.lineTo(60,30);
+		ctx.lineTo(150,30);
+		ctx.lineTo(162,42);
+		ctx.lineTo(150,54);
+		ctx.lineTo(60,54);
+		ctx.closePath();
+	}
+	if ([0,1,2,3,4,7,8,9].indexOf(dig) > -1) {
+		ctx.moveTo(168,48);
+		ctx.lineTo(156,60);
+		ctx.lineTo(156,150);
+		ctx.lineTo(168,162);
+		ctx.lineTo(180,150);
+		ctx.lineTo(180,60);
+		ctx.closePath();
+	}
+	if ([2,3,4,5,6,8,9].indexOf(dig) > -1) {
+		ctx.moveTo(48,168);
+		ctx.lineTo(60,156);
+		ctx.lineTo(150,156);
+		ctx.lineTo(162,168);
+		ctx.lineTo(150,180);
+		ctx.lineTo(60,180);
+		ctx.closePath();
+	}
+	if ([0,2,6,8].indexOf(dig) > -1) {
+		ctx.moveTo(42,174);
+		ctx.lineTo(30,186);
+		ctx.lineTo(30,276);
+		ctx.lineTo(42,288);
+		ctx.lineTo(54,276);
+		ctx.lineTo(54,186);
+		ctx.closePath();
+	}
+	if ([0,1,3,4,5,6,7,8,9].indexOf(dig) > -1) {
+		ctx.moveTo(168,174);
+		ctx.lineTo(156,186);
+		ctx.lineTo(156,276);
+		ctx.lineTo(168,288);
+		ctx.lineTo(180,276);
+		ctx.lineTo(180,186);
+		ctx.closePath();
+	}
+	if ([0,2,3,5,6,8,9].indexOf(dig) > -1) {
+		ctx.moveTo(48,294);
+		ctx.lineTo(60,282);
+		ctx.lineTo(150,282);
+		ctx.lineTo(162,294);
+		ctx.lineTo(150,306);
+		ctx.lineTo(60,306);
+		ctx.closePath();
+	}
+	ctx.fill();
+}
+</script>
+</body>
+</html>

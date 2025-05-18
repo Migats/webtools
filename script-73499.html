@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html; charset=utf-8">
+<title>Untitled Document</title>
+<script>
+var index = 1;
+window.onload = function () {
+	document.getElementById('action').onclick = function () {
+		var addElement = document.createElement('div');
+		addElement.id = 'div' + index++;
+		var node = document.getElementById('textElement').value;
+		var newNode = document.createTextNode(node);
+		addElement.appendChild(newNode);
+		document.getElementById('results').appendChild(addElement);
+		document.getElementById('textElement').value = '';
+	}
+}
+</script>
+<style>
+	#div5 {
+		color: hsla(0,100%,50%,1);
+	}
+</style>
+</head>
+<!-------------------------------------------------------------------------->
+<body>
+<h2>document.appendChild</h2>
+<input type="text" id="textElement" />
+<button id="action">Maak</button>
+<div id="results"></div>
+</body>
+</html>

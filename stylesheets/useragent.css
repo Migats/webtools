@@ -1,0 +1,254 @@
+@charset "utf-8";
+/* CSS Document "https://webtools.migats21.com/css/basic.css" */
+/* Start UserAgent */
+@namespace "http://www.w3.org/1999/xhtml";
+@import url('https://fonts.googleapis.com/css?family=Lato:300');
+/* Support b and strong */
+b, strong {
+	font-weight: 700;
+}
+/* Support big */
+big {
+	font-size: 1.2em;
+}
+/* Justify center */
+center {
+	text-align: justify;
+	text-align-last: center;
+}
+/* Support code, samp and tt */
+code, samp, tt {
+	font-family: "Source Code Pro", monospace;
+}
+/* Strike with black line */
+del {
+	text-decoration: line-through;
+	text-decoration-color: #000;
+	/* Safari */
+	-webkit-text-decoration-color: #000;
+}
+/* Support em, i, cite, var, address, dfn */
+em, i, cite, var, address, dfn {
+	font-style: italic;
+}
+/* Underline with black line */
+ins {
+	text-decoration: underline;
+	text-decoration-color: #000;
+	/* Safari */
+	-webkit-text-decoration-color: #000;
+}
+/* Text decorations in text decorations are double decorated */
+del del, strike del, s del,
+del strike, strike strike, s strike,
+del s, strike s, s s,
+ins ins, u ins,
+ins u, u u {
+	text-decoration-style: double;
+}
+/* Default bordered fieldset */
+fieldset {
+	border: 1px solid #000000;
+	border-radius: 3px;
+}
+/* A keboard definition must be Lato thin */
+kbd {
+	font-family: Lato, sans-serif;
+	font-weight: 300;
+}
+/* Make lists contenteditable */
+ul, ol, menu, dir {
+	list-style-type: none;
+}
+ul li::before, ol li::before, menu li::before, dir li::before {
+	content: "\0000b7";
+	font-family: Symbol;
+    display: inline-block;
+    width: 20px;
+    margin-left: -30px;
+    padding-right: 10px;
+    text-align: right;
+}
+ul ul li::before, ol ul li::before, menu ul li::before, dir ul li::before,
+ul menu li::before, ol menu li::before, menu menu li::before, dir menu li::before,
+ul dir li::before, ol dir li::before, menu dir li::before, dir dir li::before {
+	content: "o";
+	font-family: "Courier New", Courier;
+}
+ul ul ul li::before, ol ul ul li::before, menu ul ul li::before, dir ul ul li::before,
+ul ol ul li::before, ol ol ul li::before, menu ol ul li::before, dir ol ul li::before,
+ul menu ul li::before, ol menu ul li::before, menu menu ul li::before, dir menu ul li::before,
+ul dir ul li::before, ol dir ul li::before, menu dir ul li::before, dir dir ul li::before,
+ul ul menu li::before, ol ul menu li::before, menu ul menu li::before, dir ul menu li::before,
+ul ol menu li::before, ol ol menu li::before, menu ol menu li::before, dir ol menu li::before,
+ul menu menu li::before, ol menu menu li::before, menu menu menu li::before, dir menu menu li::before,
+ul dir menu li::before, ol dir menu li::before, menu dir menu li::before, dir dir menu li::before,
+ul ul dir li::before, ol ul dir li::before, menu ul dir li::before, dir ul dir li::before,
+ul ol dir li::before, ol ol dir li::before, menu ol dir li::before, dir ol dir li::before,
+ul menu dir li::before, ol menu dir li::before, menu menu dir li::before, dir menu dir li::before,
+ul dir dir li::before, ol dir dir li::before, menu dir dir li::before, dir dir dir li::before {
+	content: "\0000a7";
+	font-family: Wingdings;
+}
+ol {
+	counter-reset: item;
+}
+ol li::before {
+	counter-increment: item;
+	content: counter(item) ".";
+	font-family: inherit;
+}
+ul ol li::before, ol ol li::before, menu ol li::before, dir ol li::before {
+	content: counter(item, lower-alpha) ".";
+}
+ul ul ol li::before, ol ul ol li::before, menu ul ol li::before, dir ul ol li::before,
+ul ol ol li::before, ol ol ol li::before, menu ol ol li::before, dir ol ol li::before,
+ul menu ol li::before, ol menu ol li::before, menu menu ol li::before, dir menu ol li::before,
+ul dir ol li::before, ol dir ol li::before, menu dir ol li::before, dir dir ol li::before {
+	content: counter(item, lower-roman) ".";
+}
+ol[type="1"] li::before {
+	content: counter(item) "." !important;
+}
+ol[type="A"] li::before {
+	content: counter(item, upper-latin) "." !important;
+}
+ol[type="a"] li::before {
+	content: counter(item, lower-latin) "." !important;
+}
+ol[type="I"] li::before {
+	content: counter(item, upper-roman) "." !important;
+}
+ol[type="i"] li::before {
+	content: counter(item, lower-roman) "." !important;
+}
+/* Preformatted must be wrapping */
+pre {
+	white-space: pre-wrap;
+}
+/* Normal quotes */
+q::before {
+	content: "\002018";
+}
+q::after {
+	content: "\002019";
+}
+q q::before {
+	content: "\00201C";
+}
+q q::after {
+	content: "\00201D";
+}
+/* Coding quotes */
+code q::before, code q::after {
+	content: "'";
+}
+code q q::before, code q q::after {
+	content: "\"";
+}
+/* Support small */
+small {
+	font-size: 10pt;
+}
+/* Svg can be used to draw a custom char */
+svg * {
+	fill: currentColor;
+}
+svg [stroke]:not([stroke="none"]) {
+	fill: none;
+}
+/* Table with collapsed borders */
+table {
+	border-collapse: collapse;
+}
+/* Table headings are definable with scope */
+table th {
+	text-align: inherit;
+}
+table th[scope="col"] {
+	text-align: center;
+}
+table th[scope="row"], table th[scope="tab"] {
+	text-align: right;
+}
+table td + th[scope="row"], table th + th[scope="tab"] {
+	text-align: left;
+}
+/**//**//**/
+input:not([type]), input[type="email" i], input[type="number" i], input[type="password" i], input[type="tel" i], input[type="url" i], input[type="text" i] {
+    padding: 1px 0px;
+}
+input[type="checkbox" i], input[type="radio" i] {
+	font-family: Wingdings;
+	-webkit-appearance: none;
+	appearance: none;
+	display: inline;
+	margin: 3px;
+}
+input[type="checkbox" i]::before {
+	content: "\0000a8";
+}
+input[type="radio" i]::before {
+	content: "\0000a1";
+}
+input[type="checkbox" i]:checked::before {
+	content: "\0000fe";
+}
+input[type="radio" i]:checked::before {
+	content: "\0000a4";
+}
+/**//**//**/
+@media only print {
+	/* A link has no color changes */
+	a {
+		color: inherit;
+	}
+	a:link {
+		text-decoration: underline;
+	}
+	/* The URL of a link must be visible */
+	a[href]:link::after {
+		content: " (" attr(href) ")";
+	}
+	/* The discription of an abbrevation or acronym must be visible */
+	abbr[title]::after, acronym[title]::after {
+		content: " (" attr(title) ")";
+	}
+	/* The source of a blockquote must be visible */
+	blockquote[cite]::after {
+		content: " (" attr(cite) ")";
+		display: block;
+		text-align: right;
+	}
+	/* Black line */
+	hr {
+		border: none;
+		border-top: 1px solid #333333;
+	}
+	/* Hide scrollbar */
+	::-webkit-scrollbar {
+		width: 0;
+	}
+}
+@media only screen {
+	/* A link is only underlined when hovered */
+	a:link {
+		color: #0000FF;
+		text-decoration: none;
+	}
+	a:link:visited {
+		color: #800080;
+	}
+	a:link:hover {
+		text-decoration: underline;
+	}
+	/* Marks ar not visible when the window is unfocused */
+	mark {
+		background-color: transparent;
+		transition: background-color .4s linear 0s;
+	}
+	html:hover mark {
+		background-color: #FFFF00;
+	}
+}
+/* End UserAgent */

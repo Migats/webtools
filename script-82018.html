@@ -1,0 +1,20 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+<script type="text/javascript">
+	window.onload = function () {
+		var Results = document.getElementById('Results')
+		for (var i in document.getElementById('list').childNodes) {
+			Results.innerHTML += i + ': ' + document.getElementById('list').childNodes[i].innerHTML + '<br />';
+		}
+	}
+</script>
+</head>
+
+<body>
+	<ul id="list"><li>hallo</li><li>wereld</li><li>zijn we er</li></ul>
+	<div id="Results"></div>
+</body>
+</html>

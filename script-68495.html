@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+</head>
+
+<body>
+<input type="url" id="file" placeholder="URL to any image or graphic..." width="100%">
+<select id="type">
+    <option value="image/png">png</option>
+    <option value="image/jpeg">jpeg</option>
+    <option value="image/gif">gif</option>
+    <option value="image/svg+xml">svg</option>
+</select>
+<button id="run">Run</button><br>
+<canvas id="canvas"></canvas><br>
+<textarea id="output"></textarea>
+<script>
+	var canvas, image, url, type, run, output;
+	canvas = document.getElementById("canvas");
+	canvas.width = canvas.height = 0;
+	url = document.getElementById("file");
+	type = document.getElementById("type");
+	run = document.getElementById("run");
+	output = document.getElementById("output");
+	run.onclick = function () {
+		image = document.createElement("img");
+		image.onload = function () {setTimeout(function () {
+			canvas.getContext("2d").clearRect(0,0,canvas.width,canvas.height);
+			canvas.width = image.width;
+			canvas.height = image.height;
+			var ctx = canvas.getContext("2d");
+			ctx.drawImage(image, 0, 0);
+			output.value = canvas.toDataURL(type.value);
+		},200)}
+		image.src = url.value;
+	}
+</script>
+</body>
+</html>

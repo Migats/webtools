@@ -1,0 +1,40 @@
+<!doctype html>
+<html ng-app ng-init="keycodes = [{&quot;id&quot;:8,&quot;name&quot;:&quot;Backspace&quot;},{&quot;id&quot;:9,&quot;name&quot;:&quot;Tab&quot;},{&quot;id&quot;:13,&quot;name&quot;:&quot;Enter&quot;},{&quot;id&quot;:16,&quot;name&quot;:&quot;Shift&quot;},{&quot;id&quot;:17,&quot;name&quot;:&quot;Ctrl&quot;},{&quot;id&quot;:18,&quot;name&quot;:&quot;Alt&quot;},{&quot;id&quot;:19,&quot;name&quot;:&quot;Pause/Break&quot;},{&quot;id&quot;:20,&quot;name&quot;:&quot;Caps Lock&quot;},{&quot;id&quot;:27,&quot;name&quot;:&quot;Esc&quot;},{&quot;id&quot;:33,&quot;name&quot;:&quot;Page Up&quot;},{&quot;id&quot;:34,&quot;name&quot;:&quot;Page Down&quot;},{&quot;id&quot;:35,&quot;name&quot;:&quot;End&quot;},{&quot;id&quot;:36,&quot;name&quot;:&quot;Home&quot;},{&quot;id&quot;:37,&quot;name&quot;:&quot;←&quot;},{&quot;id&quot;:38,&quot;name&quot;:&quot;↑&quot;},{&quot;id&quot;:39,&quot;name&quot;:&quot;→&quot;},{&quot;id&quot;:40,&quot;name&quot;:&quot;↓&quot;},{&quot;id&quot;:45,&quot;name&quot;:&quot;Insert&quot;},{&quot;id&quot;:46,&quot;name&quot;:&quot;Delete&quot;},{&quot;id&quot;:48,&quot;name&quot;:&quot;0&quot;},{&quot;id&quot;:49,&quot;name&quot;:&quot;1&quot;},{&quot;id&quot;:50,&quot;name&quot;:&quot;2&quot;},{&quot;id&quot;:51,&quot;name&quot;:&quot;3&quot;},{&quot;id&quot;:52,&quot;name&quot;:&quot;4&quot;},{&quot;id&quot;:53,&quot;name&quot;:&quot;5&quot;},{&quot;id&quot;:54,&quot;name&quot;:&quot;6&quot;},{&quot;id&quot;:55,&quot;name&quot;:&quot;7&quot;},{&quot;id&quot;:56,&quot;name&quot;:&quot;8&quot;},{&quot;id&quot;:57,&quot;name&quot;:&quot;9&quot;},{&quot;id&quot;:65,&quot;name&quot;:&quot;A&quot;},{&quot;id&quot;:66,&quot;name&quot;:&quot;B&quot;},{&quot;id&quot;:67,&quot;name&quot;:&quot;C&quot;},{&quot;id&quot;:68,&quot;name&quot;:&quot;D&quot;},{&quot;id&quot;:69,&quot;name&quot;:&quot;E&quot;},{&quot;id&quot;:70,&quot;name&quot;:&quot;F&quot;},{&quot;id&quot;:71,&quot;name&quot;:&quot;G&quot;},{&quot;id&quot;:72,&quot;name&quot;:&quot;H&quot;},{&quot;id&quot;:73,&quot;name&quot;:&quot;I&quot;},{&quot;id&quot;:74,&quot;name&quot;:&quot;J&quot;},{&quot;id&quot;:75,&quot;name&quot;:&quot;K&quot;},{&quot;id&quot;:76,&quot;name&quot;:&quot;L&quot;},{&quot;id&quot;:77,&quot;name&quot;:&quot;M&quot;},{&quot;id&quot;:78,&quot;name&quot;:&quot;N&quot;},{&quot;id&quot;:79,&quot;name&quot;:&quot;O&quot;},{&quot;id&quot;:80,&quot;name&quot;:&quot;P&quot;},{&quot;id&quot;:81,&quot;name&quot;:&quot;Q&quot;},{&quot;id&quot;:82,&quot;name&quot;:&quot;R&quot;},{&quot;id&quot;:83,&quot;name&quot;:&quot;S&quot;},{&quot;id&quot;:84,&quot;name&quot;:&quot;T&quot;},{&quot;id&quot;:85,&quot;name&quot;:&quot;U&quot;},{&quot;id&quot;:86,&quot;name&quot;:&quot;V&quot;},{&quot;id&quot;:87,&quot;name&quot;:&quot;W&quot;},{&quot;id&quot;:88,&quot;name&quot;:&quot;X&quot;},{&quot;id&quot;:89,&quot;name&quot;:&quot;Y&quot;},{&quot;id&quot;:90,&quot;name&quot;:&quot;Z&quot;},{&quot;id&quot;:91,&quot;name&quot;:&quot;Left WinKey&quot;},{&quot;id&quot;:92,&quot;name&quot;:&quot;Right WinKey&quot;},{&quot;id&quot;:93,&quot;name&quot;:&quot;Select&quot;},{&quot;id&quot;:96,&quot;name&quot;:&quot;NumPad 0&quot;},{&quot;id&quot;:97,&quot;name&quot;:&quot;NumPad 1&quot;},{&quot;id&quot;:98,&quot;name&quot;:&quot;NumPad 2&quot;},{&quot;id&quot;:99,&quot;name&quot;:&quot;NumPad 3&quot;},{&quot;id&quot;:100,&quot;name&quot;:&quot;NumPad 4&quot;},{&quot;id&quot;:101,&quot;name&quot;:&quot;NumPad 5&quot;},{&quot;id&quot;:102,&quot;name&quot;:&quot;NumPad 6&quot;},{&quot;id&quot;:103,&quot;name&quot;:&quot;NumPad 7&quot;},{&quot;id&quot;:104,&quot;name&quot;:&quot;NumPad 8&quot;},{&quot;id&quot;:105,&quot;name&quot;:&quot;NumPad 9&quot;},{&quot;id&quot;:106,&quot;name&quot;:&quot;NumPad *&quot;},{&quot;id&quot;:107,&quot;name&quot;:&quot;NumPad +&quot;},{&quot;id&quot;:109,&quot;name&quot;:&quot;NumPad -&quot;},{&quot;id&quot;:110,&quot;name&quot;:&quot;NumPad .&quot;},{&quot;id&quot;:111,&quot;name&quot;:&quot;NumPad /&quot;},{&quot;id&quot;:112,&quot;name&quot;:&quot;F1&quot;},{&quot;id&quot;:113,&quot;name&quot;:&quot;F2&quot;},{&quot;id&quot;:114,&quot;name&quot;:&quot;F3&quot;},{&quot;id&quot;:115,&quot;name&quot;:&quot;F4&quot;},{&quot;id&quot;:116,&quot;name&quot;:&quot;F5&quot;},{&quot;id&quot;:117,&quot;name&quot;:&quot;F6&quot;},{&quot;id&quot;:118,&quot;name&quot;:&quot;F7&quot;},{&quot;id&quot;:119,&quot;name&quot;:&quot;F8&quot;},{&quot;id&quot;:120,&quot;name&quot;:&quot;F9&quot;},{&quot;id&quot;:121,&quot;name&quot;:&quot;F10&quot;},{&quot;id&quot;:122,&quot;name&quot;:&quot;F11&quot;},{&quot;id&quot;:123,&quot;name&quot;:&quot;F12&quot;},{&quot;id&quot;:144,&quot;name&quot;:&quot;Num Lock&quot;},{&quot;id&quot;:145,&quot;name&quot;:&quot;Scroll Lock&quot;},{&quot;id&quot;:186,&quot;name&quot;:&quot;;&quot;},{&quot;id&quot;:187,&quot;name&quot;:&quot;=&quot;},{&quot;id&quot;:188,&quot;name&quot;:&quot;,&quot;},{&quot;id&quot;:189,&quot;name&quot;:&quot;-&quot;},{&quot;id&quot;:190,&quot;name&quot;:&quot;.&quot;},{&quot;id&quot;:191,&quot;name&quot;:&quot;/&quot;},{&quot;id&quot;:192,&quot;name&quot;:&quot;`&quot;},{&quot;id&quot;:219,&quot;name&quot;:&quot;[&quot;},{&quot;id&quot;:220,&quot;name&quot;:&quot;\\&quot;},{&quot;id&quot;:221,&quot;name&quot;:&quot;]&quot;},{&quot;id&quot;:222,&quot;name&quot;:&quot;'&quot;}]">
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+<script>
+String.prototype.toRgb = function () {
+	return {
+		red: parseInt((this + '#').slice((this.length > 5) ? -7 : -4,(this.length > 5) ? -5 : -3),16),
+		green: parseInt((this + '#').slice((this.length > 5) ? -5 : -3,(this.length > 5) ? -3 : -2),16),
+		blue: parseInt((this + '#').slice((this.length > 5) ? -3 : -2,-1),16),
+	}
+}
+</script>
+</head>
+<body>
+<input type="text" ng-model="color" />
+<table>
+	<tr>
+    	<th>Keycode</th>
+        <th>Keyname</th>
+        <th>Keycode</th>
+        <th>Keyname</th>
+        <th>Keycode</th>
+        <th>Keyname</th>
+    </tr>
+	<tr align="center" ng-repeat="keycode in keycodes | limitTo : 33">
+        <td>{{ keycode.id }}</td>
+        <td>{{ keycode.name }}</td>
+        <td>{{ keycode.id }}</td>
+        <td>{{ keycode.name }}</td>
+        <td>{{ keycode.id }}</td>
+        <td>{{ keycode.name }}</td>
+    </tr>
+</table>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script>
+</script>
+</body>
+</html>

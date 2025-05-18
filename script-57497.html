@@ -1,0 +1,126 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Formula chart</title>
+</head>
+<body>
+<p>Canvas size:<br />
+<input type="number" onChange="canvas.width = this.value; drawChart(-1)" min="10" value="200" /> &times;
+<input type="number" onChange="canvas.height = this.value; drawChart(-1)" min="10" value="200" /></p>
+<p>Grid size (in px, when entering 0, there will be no grid):<br />
+<input type="number" min="0" onChange="drawChart(0,this)" value="0" /> &times;
+<input type="number" min="0" onChange="drawChart(1,this)" value="0" /></p>
+<p>Function scale:<br />
+X: <input type="number" min="1" onChange="drawChart(2,this)" value="1" /> : <input type="number" min="1" onChange="drawChart(4,this)" value="1" /><br />
+Y: <input type="number" min="1" onChange="drawChart(3,this)" value="1" /> : <input type="number" min="1" onChange="drawChart(5,this)" value="1" /></p>
+<p>JS formula (with Math as block object):<br />
+<input type="text" id="fx" onChange="drawChart(-1)" /><br />
+<span id="error" style = "color: red"></span></p>
+<p><button onClick="generateChart()">Generate as picture</button></p>
+<canvas width="200" height="200" id="canvas" onClick="drawChart(-1)"></canvas>
+<script>
+Math.sqr = function (x) {return Math.pow(x,2)};
+Math.cube = function (x) {return Math.pow(x,3)};
+Math.cbrt = function (x) {return Math.pow(x,1/3)};
+Math.clamp = function (number,maxValue,minValue) {return number>maxValue ? maxValue : number<minValue ? minValue : number};
+Math.degtorad = function (x) {return x*Math.PI/180};
+Math.radtodeg = function (x) {return x*180/Math.PI};
+Math.sign = function (x) {return x>0 ? 1 : x<0 ? -1 : 0};
+function fx(x) {
+	with (Math) {
+		try {return eval(document.getElementById("fx").value)} catch (err) {document.getElementById("error").innerHTML = "You wrote an incorrect script"};
+	}
+}
+// Defining variables for drawing
+var ctx = document.getElementById("canvas").getContext("2d");
+var canvas = ctx.canvas;
+var gridX = gridY = 0, fxScaleX = fxScaleY = pfxX = pfxY = nfxX = nfxY = 1;
+// Draw the chart
+function drawChart(type,el) {
+	if (type == 0) {gridX = Number(el.value)};
+	if (type == 1) {gridY = Number(el.value)};
+	if (type == 2) {pfxX = Number(el.value)};
+	if (type == 3) {pfxY = Number(el.value)};
+	if (type == 4) {nfxX = Number(el.value)};
+	if (type == 5) {nfxY = Number(el.value)};
+	fxScaleX = pfxX / nfxX; fxScaleY = pfxY / nfxY;
+	ctx.fillStyle = "#ffffff";
+	ctx.fillRect(0,0,canvas.width,canvas.height);
+	ctx.translate(.5,-.5);
+	ctx.strokeStyle = "#808080";
+	if (gridY > 0) {
+		for (var i=canvas.height;i>=0;i-=gridY) {
+			ctx.beginPath();
+			ctx.moveTo(0,i);
+			ctx.lineTo(canvas.width,i);
+			ctx.stroke();
+		}
+	}
+	if (gridX > 0) {
+		for (var i=0;i<=canvas.width;i+=gridX) {
+			ctx.beginPath();
+			ctx.moveTo(i,0);
+			ctx.lineTo(i,canvas.height);
+			ctx.stroke();
+		}
+	}
+	ctx.textAlign = "left";
+	ctx.textBaseline = "bottom";
+	ctx.font = "8px \"MS Sans Serif\", sans-serif"
+	ctx.fillStyle = "#808080";
+	ctx.fillText("O",2,canvas.height - 2);
+	if (gridY > 0) {
+		for (var i=canvas.height-gridY;i>0;i-=gridY) {
+			if (((canvas.height-i)/fxScaleY)%1 !== 0) {continue};
+			ctx.fillText((canvas.height-i)/fxScaleY,2,i-2);
+		}
+	}
+	if (gridX > 0) {
+		for (var i=gridX;i<=canvas.width;i+=gridX) {
+			if ((i/fxScaleX)%1 !== 0) {continue};
+			ctx.fillText(i/fxScaleX,i+2,canvas.height-2);
+		}
+	}
+	ctx.beginPath();
+	ctx.moveTo(0,0);
+	ctx.lineTo(0,canvas.height);
+	ctx.lineTo(canvas.width,canvas.height);
+	ctx.strokeStyle = "#000000";
+	ctx.stroke();
+	drawLine();
+	ctx.translate(-.5,.5);
+}
+function drawLine() {
+	document.getElementById("error").innerHTML = "";
+	if (typeof fx == "function" && document.getElementById("fx").value != "") {
+		ctx.beginPath();
+		ctx.moveTo(-1,canvas.height - fx(-1/fxScaleX)*fxScaleY);
+		for (var i = -1;i <= canvas.width+1; i+=.1) {
+			ctx.lineTo(i,canvas.height - fx(i/fxScaleX)*fxScaleY);
+		}
+		ctx.strokeStyle = "#ff0000";
+		ctx.stroke();
+	}
+}
+function generateChart() {
+	drawChart(-1);
+	if (document.getElementById("error").innerHTML == "") {
+		var img = document.createElement("img");
+		img.src = canvas.toDataURL("image/png");
+		img.alt = "chart";
+		canvas.parentElement.replaceChild(img,canvas);
+		var inputs = document.getElementsByTagName("input");
+		for (var i=0;i<inputs.length;i++) {
+			inputs[i].disabled = true;
+		}
+		var link = document.createElement("a");
+		link.target = "_blank";
+		link.href = img.src;
+		link.innerHTML = "Open in a new tab";
+		document.getElementById("error").appendChild(link);
+	}
+}
+</script>
+</body>
+</html>

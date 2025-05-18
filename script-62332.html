@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <body>
+        <div id="key"></div>
+        <script>
+            var keyDisplay = document.getElementById("key");
+            const keyCodes = [
+                "","","","","","","",""," "," ","","",""," ","","","","",""," "," ","","","","","",""," ","","","","",
+                "Space"," "," "," "," ","\u2190","\u2191","\u2192","\u2193","","","",""," "," ","","0","1","2","3","4","5","6","7","8","9",""," ",""," ","","",
+                "","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","","","","","","Num 0","Num 1","Num 2","Num 3","Num 4","Num 5","Num 6","Num 7","Num 8","Num 9","Num Multi","Num Plus","","Num Minus","Num Period","Num Div"," "," "," "," "," "," "," "," "," "," "," "," ",
+            ];
+            function onKeyboard(event) {
+                if (event.repeat) {return;}
+                if (event.type == "keydown") {
+                    var string = "";
+                    if (event.shiftKey) {
+                        string += "Shift + "
+                    }
+                    if (event.ctrlKey) {
+                        string += "Ctrl + "
+                    }
+                    if (event.altKey) {
+                        string += "Alt + "
+                    }
+                    var keyName = keyCodes[event.which];
+                    if (typeof keyName != "string" || keyName == "") {
+                        string = string.replace(/\s\+\s$/,"");
+                    } else if (keyName == " ") {
+                        string += event.key;
+                    } else {
+                        string += keyName;
+                    }
+                    keyDisplay.innerHTML = string;
+                } else {
+                    switch (event.which) {
+                        default:
+                        keyDisplay.innerHTML = keyDisplay.innerHTML.replace(/(\s\+\s|^)([^\+]+?)$/,"");
+                        break;
+                        case 16:
+                        keyDisplay.innerHTML = keyDisplay.innerHTML.replace(/Shift(\s\+\s|$)/,"");
+                        break;
+                        case 17:
+                        keyDisplay.innerHTML = keyDisplay.innerHTML.replace(/Ctrl(\s\+\s|$)/,"");
+                        break;
+                        case 18:
+                        keyDisplay.innerHTML = keyDisplay.innerHTML.replace(/Alt(\s\+\s|$)/,"");
+                    }
+                }
+            }
+            window.onkeydown = window.onkeyup = onKeyboard;
+        </script>
+        <style>
+            #key:not(:empty) {
+                background-color: #000000C0;
+                color: #FFFFFF;
+                font: 36pt sans-serif;
+                display: inline;
+                padding: 8px 16px;
+                border-radius: 16px;
+            }
+        </style>
+    </body>
+</html>

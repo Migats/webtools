@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <script src="javascripts/color.js"></script>
+    <script>
+        window.onload = () => {
+            var canvas = document.getElementById("mainCanvas");
+            var ctx = canvas.getContext("2d");
+            function render(tt) {
+                ctx.fillStyle = "#000000";
+                ctx.fillRect(0, 0, 1600, 900);
+                ctx.beginPath();
+                let c = 50;
+                let d = c + tt*2.5;
+                let e = 450;
+                let g = 2;
+                let s = tt/100;
+                let t = Math.sin(s);
+                let u = Math.cos(s);
+                for(let i=0;i<4;i++) {
+                    let x = ((i & 2) - 1) * g;
+                    let y = ((i + 1 & 2) - 1) * g;
+                    let aa = x * u - y * t;
+                    let ab = y * u + x * t;
+                    ctx.lineTo(d+aa, e+ab);
+                }
+                ctx.fillStyle = Color.WHITE.withOpacity(1.0-Math.pow(Math.abs(tt/200-1.0),3));
+                ctx.fill();
+                ctx.beginPath();
+                ctx.lineTo(c+tt, e);
+                ctx.lineTo(d, e-g);
+                ctx.lineTo(d+g, e);
+                ctx.lineTo(d, e+g);
+                ctx.fillStyle = Color.WHITE.withOpacity(1.0-Math.pow(Math.abs((tt+50)/200-1.0),3));
+                ctx.fill();
+                requestAnimationFrame(render);
+            }
+            requestAnimationFrame(render);
+        }
+    </script>
+</head>
+<body>
+    <canvas id="mainCanvas" width="1600" height="900"></canvas>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+<head>
+<script>
+function choose (x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16) {
+	return arguments[Math.floor(Math.random() * arguments.length)]
+}
+Number.prototype.outOfTheRange = function (minX,maxX) {
+	return this < minX && this > maxX;
+}
+Number.prototype.hexaColor = function () {
+	return ((this % 16777216 + 16777216).toString(16).replace(/1/i,'#').toUpperCase());
+}
+Number.prototype.toRgb = function () {
+	return {
+		red: Math.floor(this / 65536 % 256),
+		green: Math.floor(this / 256 % 256),
+		blue: this % 256
+	}
+}
+String.prototype.toRgb = function () {
+	return ((this.length === 4 && this.charAt(0) == '#') ? {
+		red: parseInt(this.charAt(1),16) * 17,
+		green: parseInt(this.charAt(2),16) * 17,
+		blue: parseInt(this.charAt(3),16) * 17
+	} : (this.length === 7 && this.charAt(0) == '#') ? {
+		red: parseInt(this.slice(-6,-4),16),
+		green: parseInt(this.slice(-4,-2)),
+		blue: parseInt(this.slice(-2,0))
+	} : null);
+}
+function rgb(red,green,blue) {
+	return ((red * 65536) + (green * 256) + blue);
+}
+function hsl(hue,saturation,lightness) {
+	return rgb(Math.round((fromHue(hue % 240).red - 127.5) * saturation / 240 + ((lightness < 120) ? 127.5 : -127) * ((lightness < 120) ? lightness : 100 - lightness)),Math.round((fromHue(hue % 240).green - 127.5) * saturation / 240 + ((lightness < 120) ? 127.5 : -127) * ((lightness < 120) ? lightness : 100 - lightness)),Math.round((fromHue(hue % 240).blue - 127.5) * saturation / 240 + ((lightness < 120) ? 127.5 : -127) * ((lightness < 120) ? lightness : 100 - lightness)));
+}
+function fromHue(hue) {
+	return {
+		red: (hue.outOfTheRange(40,200)) ? 255 : (!hue.outOfTheRange(80,160)) ? 0 : (hue < 80) ? (80 - hue) * 255/40 : (hue - 160) * 255/40,
+		green: (!hue.outOfTheRange(40,120)) ? 255 : (!hue.outOfTheRange(160,240)) ? 0 : (hue < 160) ? (160 - hue) * 255/40 : hue * 255/40,
+		blue: (!hue.outOfTheRange(120,200)) ? 255 : (!hue.outOfTheRange(0,80)) ? 0 : (hue < 160) ? (240 - hue) * 255/40 : (hue - 80) * 255/40
+	}
+}
+window.onload = function () {
+	document.body.bgColor = hsl(50,100,0).hexaColor()
+}
+var ilt = 9;
+</script>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+</head>
+
+<body>
+<div id="result"></div>
+</body>
+</html>

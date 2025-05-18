@@ -1,0 +1,330 @@
+@charset "utf-8";
+/* CSS Document */
+body {
+	font-family: calibri /* Maintext */;
+}
+h1.title {
+	color: #000000;
+	font-size: 50px;
+}
+h1,h2,h3,h4,h5,h6 {
+	font-family: "calibri" /* Heading text */;
+	font-weight: 300;
+}
+h1,h2 {
+	color: #5B9BD5 /* Accent-color 1 */;
+}
+h3,h6 {
+	color: #1E4E79 /* Accent-color 1 (50% darker) */;
+}
+h4 {
+	font-style: italic;
+}
+h4,h5 {
+	color: #2E75B5 /* Accent-color 1 (25% darker)*/;
+}
+p, li {
+	color: #000000;
+}
+q {
+	quotes: '“' '”';
+}
+/* Begin table define */
+.rowline .colline, .accent1, .accent2, .accent3, .accent4, .accent5, .accent6 {}
+table, td, th {
+	border-collapse: collapse;
+	padding-left: 8px;
+	padding-right: 8px;
+	text-align: left;
+}
+th:first-child {
+	text-align: right;
+}
+table.grid td, table.grid th {
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-color: #000000;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-left-style: solid;
+	border-top-color: #000000;
+	border-right-color: #000000;
+	border-left-color: #000000;
+}
+table.lightGrid tr td, table.lightGrid tr th,
+table.nonstyle1 tr td, table.nonstyle1 tr th {
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+	border-bottom-color: #C1C1C1 /* Text/background color 1 light (25% darker) */;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-left-style: solid;
+	border-top-color: #C1C1C1;
+	border-right-color: #C1C1C1;
+	border-left-color: #C1C1C1;
+}
+table.nonstyle2 tr {
+	border-top-color: #7F7F7F /* Text/background color 1 dark (50% lighter) */;
+	border-bottom-color: #7F7F7F /* Text/background color 1 dark (50% lighter) */;
+	border-width: 1px 0;
+	border-style: solid;
+}
+table.nonstyle3.rowline tr:nth-of-type(even), table.nonstyle3.colline tr > :nth-child(even),
+table.nonstyle1.rowline tr:nth-of-type(even), table.nonstyle1.colline tr > :nth-child(even),
+table.nonstyle4.rowline tr:nth-of-type(even), table.nonstyle4.colline tr > :nth-child(even),
+table.nonstyle5.rowline tr:nth-of-type(even) td, table.nonstyle5.colline tr td:nth-child(even) {
+	background-color: #F2F2F2 /* Text/background color 1 light (5% darker) */;
+}
+table.nonstyle3 tr:first-of-type th,
+table.nonstyle5 tr:first-of-type th {
+	border-bottom-color: #7F7F7F /* Text/background color 1 dark (50% lighter) */;
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+}
+table.nonstyle3 tr th:first-child,
+table.nonstyle5 tr th:first-child {
+	border-right-color: #7F7F7F /* Text/background color 1 dark (50% lighter) */;
+	border-right-style: solid;
+	border-right-width: 1px;
+}
+table.nonstyle3 tr:first-of-type th:first-child,
+table.nonstyle5 tr:first-of-type th:first-child {
+	border-right-width: 0px;
+}
+table.nonstyle3 tr th:last-child,
+table.nonstyle5 tr th:last-child {
+	border-left-color: #7F7F7F /* Text/background color 1 dark (50% lighter) */;
+}
+table.nonstyle5 th {
+	font-style: italic;
+	font-weight: normal;
+}
+table.grid1 td, table.grid1 th {
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+	border-top-color: #999999;
+	border-right-color: #999999;
+	border-bottom-color: #999999;
+	border-left-color: #999999;
+}
+table.grid1 tr:first-of-type th {
+	border-bottom-width: 3px;
+	border-bottom-color: #666666;
+}
+table.grid1.accent1 td,
+table.grid1.accent1 th {
+	border-color: #BDD7EE /* Accentcolor 1 (60% lighter) */;
+}
+table.grid1.accent1 tr:first-of-type th {
+	border-bottom-color: #9CC3E5 /* Accentcolor 1 (40% lighter) */;
+}
+table.grid1.accent2 td,
+table.grid1.accent2 th {
+	border-color: #F7CBAC /* Accentcolor 2 (60% lighter) */;
+}
+table.grid1.accent2 tr:first-of-type th {
+	border-bottom-color: #F4B183 /* Accentcolor 2 (40% lighter) */;
+}
+table.grid1.accent3 td,
+table.grid1.accent3 th {
+	border-color: #DBDBDB /* Accentcolor 3 (60% lighter) */;
+}
+table.grid1.accent3 tr:first-of-type th {
+	border-bottom-color: #C9C9C9 /* Accentcolor 3 (40% lighter) */;
+}
+table.grid1.accent4 td,
+table.grid1.accent4 th {
+	border-color: #FDE59B /* Accentcolor 4 (60% lighter) */;
+}
+table.grid1.accent4 tr:first-of-type th {
+	border-bottom-color: #FFD965 /* Accentcolor 4 (40% lighter) */;
+}
+table.grid1.accent5 td,
+table.grid1.accent5 th {
+	border-color: #B4C6E7 /* Accentcolor 5 (60% lighter) */;
+}
+table.grid1.accent5 tr:first-of-type th {
+	border-bottom-color: #8EAADB /* Accentcolor 5 (40% lighter) */;
+}
+table.grid1.accent6 td,
+table.grid1.accent6 th {
+	border-color: #C5E0B3 /* Accentcolor 6 (60% lighter) */;
+}
+table.grid1.accent6 tr:first-of-type th {
+	border-bottom-color: #A8D08D /* Accentcolor 6 (40% lighter) */;
+}
+table.grid2 th, table.grid2 td {
+	border-color: #666666;
+	border-style: solid;
+	border-width: 1px;
+}
+table.grid2 tr:first-of-type th {
+	border-top-width: 0;
+	border-left-width: 0;
+	border-right-width: 0;
+	border-bottom-width: 3px;
+}
+table.grid2 tr > :first-child, table.grid2 tr > :last-child {
+	border-left-width: 0;
+	border-right-width: 0;
+}
+table.grid2.rowline tr:nth-of-type(even), table.grid2.colline tr > td:nth-child(even) {
+	background-color: #CCCCCC;
+}
+table.grid2.accent1 tr td,
+table.grid2.accent1 tr th,
+table.grid3.accent1 tr td, 
+table.grid3.accent1 tr th,
+table.grid4.accent1 tr > :nth-of-type(n) {
+	border-color: #9CC3E5 /* Accentcolor 1 (40% lighter) */;
+}
+table.grid2.accent1.rowline tr:nth-of-type(even), table.grid2.accent1.colline tr > td:nth-child(even),
+table.grid3.accent1.rowline tr:nth-of-type(even) td, table.grid3.accent1.colline tr td:nth-of-type(odd),
+table.grid4.accent1.rowline tr:nth-of-type(even), table.grid4.accent1.colline tr > td:nth-of-type(odd) {
+	background-color: #DEEBF6 /* Accentcolor 1 (80% lighter) */;
+}
+table.grid2.accent2 tr td,
+table.grid2.accent2 tr th,
+table.grid3.accent2 tr td, 
+table.grid3.accent2 tr th,
+table.grid4.accent2 tr > :nth-of-type(n) {
+	border-color: #F4B183 /* Accentcolor 2 (40% lighter) */;
+}
+table.grid2.accent2.rowline tr:nth-of-type(even), table.grid2.accent2.colline tr > td:nth-child(even),
+table.grid3.accent2.rowline tr:nth-of-type(even) td, table.grid3.accent2.colline tr td:nth-of-type(odd),
+table.grid4.accent2.rowline tr:nth-of-type(even), table.grid4.accent2.colline tr > td:nth-of-type(odd) {
+	background-color: #FBE5D5 /* Accentcolor 2 (80% lighter) */;
+}
+table.grid2.accent3 tr td,
+table.grid2.accent3 tr th,
+table.grid3.accent3 tr td, 
+table.grid3.accent3 tr th,
+table.grid4.accent3 tr > :nth-of-type(n) {
+	border-color: #C9C9C9 /* Accentcolor 3 (40% lighter) */;
+}
+table.grid2.accent3.rowline tr:nth-of-type(even), table.grid2.accent3.colline tr > td:nth-child(even),
+table.grid3.accent3.rowline tr:nth-of-type(even) td, table.grid3.accent3.colline tr td:nth-of-type(odd),
+table.grid4.accent3.rowline tr:nth-of-type(even), table.grid4.accent3.colline tr > td:nth-of-type(odd) {
+	background-color: #EDEDED /* Accentcolor 3 (80% lighter) */;
+}
+table.grid2.accent4 tr td,
+table.grid2.accent4 tr th,
+table.grid3.accent4 tr td, 
+table.grid3.accent4 tr th,
+table.grid4.accent4 tr > :nth-of-type(n) {
+	border-color: #FFD965 /* Accentcolor 4 (40% lighter) */;
+}
+table.grid2.accent4.rowline tr:nth-of-type(even), table.grid2.accent4.colline tr > td:nth-child(even),
+table.grid3.accent4.rowline tr:nth-of-type(even) td, table.grid3.accent4.colline tr td:nth-of-type(odd),
+table.grid4.accent4.rowline tr:nth-of-type(even), table.grid4.accent4.colline tr > td:nth-of-type(odd) {
+	background-color: #FFF2CC /* Accentcolor 4 (80% lighter) */;
+}
+table.grid2.accent5 tr td,
+table.grid2.accent5 tr th,
+table.grid3.accent5 tr td, 
+table.grid3.accent5 tr th,
+table.grid4.accent5 tr > :nth-of-type(n) {
+	border-color: #8EAADB /* Accentcolor 5 (40% lighter) */;
+}
+table.grid2.accent5.rowline tr:nth-of-type(even), table.grid2.accent5.colline tr > td:nth-child(even),
+table.grid3.accent5.rowline tr:nth-of-type(even) td, table.grid3.accent5.colline tr td:nth-of-type(odd),
+table.grid4.accent5.rowline tr:nth-of-type(even), table.grid4.accent5.colline tr > td:nth-of-type(odd) {
+	background-color: #D9E2F3 /* Accentcolor 5 (80% lighter) */;
+}
+table.grid2.accent6 tr td,
+table.grid2.accent6 tr th,
+table.grid3.accent6 tr td, 
+table.grid3.accent6 tr th,
+table.grid4.accent6 tr > :nth-of-type(n) {
+	border-color: #A8D08D /* Accentcolor 6 (40% lighter) */;
+}
+table.grid2.accent6.rowline tr:nth-of-type(even), table.grid2.accent6.colline tr > td:nth-child(even),
+table.grid3.accent6.rowline tr:nth-of-type(even) td, table.grid3.accent6.colline tr > td:nth-of-type(odd),
+table.grid4.accent6.rowline tr:nth-of-type(even), table.grid4.accent6.colline tr > td:nth-of-type(odd) {
+	background-color: #E2EFD9 /* Accentcolor 6 (80% lighter) */;
+}
+table.grid3 tr td {
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-bottom-style: solid;
+	border-left-style: solid;
+}
+table.grid3 tr > :nth-of-type(n) {
+	border-color: #666666;
+}
+table.grid3 tr:first-of-type th {
+	border-bottom-style: solid;
+	border-bottom-width: 1px;
+}
+table.grid3.rowline tr:nth-of-type(even) td, table.grid3.colline tr td:nth-of-type(odd),
+table.grid4.rowline tr:nth-of-type(even), table.grid4.colline tr td:nth-of-type(odd) {
+	background-color: #CCCCCC;
+}
+table.grid4 tr > :nth-child(n) {
+	border-width: 1px;
+	border-color: #666666;
+	border-style: solid;
+}
+table.grid4 tr:first-of-type th {
+	background-color: #000000 /* Text/background color 1 dark */;
+	color: #FFFFFF /* Text/background color 1 light */;
+}
+table.grid4.accent1 tr:first-of-type th {
+	background-color: #5B9BD5 /* Accentcolor 1 */;
+	border-color: #5B9BD5 /* Accentcolor 1 */;
+}
+table.grid4.accent2 tr:first-of-type th {
+	background-color: #ED7D31 /* Accentcolor 2 */;
+	border-color: #ED7D31 /* Accentcolor 2 */;
+}
+table.grid4.accent3 tr:first-of-type th {
+	background-color: #A5A5A5 /* Accentcolor 3 */;
+	border-color: #A5A5A5 /* Accentcolor 3 */;
+}
+table.grid4.accent4 tr:first-of-type th {
+	background-color: #FFC000 /* Accentcolor 4 */;
+	border-color: #FFC000 /* Accentcolor 4 */;
+}
+table.grid4.accent5 tr:first-of-type th {
+	background-color: #4472C4 /* Accentcolor 5 */;
+	border-color: #4472C4 /* Accentcolor 5 */;
+}
+table.grid4.accent6 tr:first-of-type th {
+	background-color: #70AD47 /* Accentcolor 6 */;
+	border-color: #70AD47 /* Accentcolor 6 */;
+}
+table.grid5 tr :nth-of-type(n) {
+	border-color: #FFFFFF /* Text/background color 1 light */;
+	border-style: solid;
+	border-width: 1px;
+}
+table.grid5 tr th {
+	background-color: #000000 /* Text/background color 1 dark */;
+	color: #FFFFFF /* Text/background color 1 light */;
+}
+table.grid5 tr:first-of-type th {
+	border-left-color: #000000;
+	border-right-color: #000000;
+}
+table.grid5 tr:first-of-type th:first-child {
+	border-left-color: #FFFFFF;
+}
+table.grid5 tr:first-of-type th:last-child {
+	border-right-color: #FFFFFF;
+}

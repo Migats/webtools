@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+		<meta charset="utf-8" />
+		<title>Convert Font to MCAscii</title>
+		<style>
+			body {
+				font-family: Arial, Helvetica, sans-serif;
+				font-size: 32px;
+			}
+			#Container {
+				width: 1024px;
+				margin: auto;
+			}
+			input, select, button {
+				font-size: 0.833333333333333333333333333333333333em;
+			}
+			button {
+    			padding: 2px 12px;
+			}
+			input, select {
+				padding: 1px;
+			}
+			input[type="number"] {
+				width: 80px;
+			}
+			canvas#canvas {
+				transform: scaleX(0.25) scaleY(0.25);
+				background-color: #000;
+				background-image: linear-gradient(0deg, #a00 0%, transparent 2%, transparent 98%, #a00 100%), linear-gradient(90deg, #00f 0%, transparent 2%, transparent 98%, #00f 100%);
+				background-size: 256px 256px;
+				margin: -1536px;
+			}
+			#controlls {
+				margin-bottom: 2em;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="Container">
+			<noscript>This page needs JavaScript. <a href="https://www.enable-javascript.com/">More info...</a><br /></noscript>
+			<div id="controlls">
+				Font family: <input id="font" type="text" /><br />
+				Alternate: 
+				<select id="font-alt">
+					<option value="&quot;Minecraft&quot;, serif">Minecraft</option>
+					<option value="serif">Serif</option>
+					<option value="sans-serif">Sans Serif</option>
+					<option value="monospace">Monospace</option>
+					<option value="fantasy">Fantasy</option>
+					<option value="cursive">Cursive</option>
+				</select><br /><br />
+				Height: <input id="height" type="number" value="256" step="1" /> px<br />
+				Ascent: <input id="ascent" type="number" value="0" step="1" /> px<br /><br />
+				<button id="preview">Preview</button>
+				<button id="download">Download</button>
+			</div>
+			<canvas id="canvas" width="4096" height="4096">This page needs canvas drawing. <a href="https://community.canvaslms.com/docs/doc-10720">More info...</a></canvas>
+		</div>
+		<script>
+			function default_image_resize(data) {
+				// Create an image
+				var img_s = new Image(128,128);
+				img_s.src = data;
+				var s_canvas = document.createElement("canvas");
+			}
+			var in_font = document.getElementById("font");
+			var in_altfont = document.getElementById("font-alt");
+			var in_height = document.getElementById("height");
+			var in_ascent = document.getElementById("ascent");
+			var btn_preview = document.getElementById("preview");
+			var btn_download = document.getElementById("download");
+			var canvas = document.getElementById("canvas");
+			var ctx = canvas.getContext("2d");
+			var altcanvas = document.createElement("canvas");
+			var altctx = altcanvas.getContext("2d");
+			const default_image = default_image_resize("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAYAAADDPmHLAAAHsklEQVR42u1d2ZLcIAyc///pyUu2aisZY6kPJMbiJfF6wBxNIwkhXu+/6RVIV799/0rRPNH8P+9//4t8g63/XR2vyr/Le1d+5P3qedVvkhSpgDN/BriRzlF/v7p9kgKY9wqER9+jA8C2L/Ls6l8aHFlKYZ+z9BSldnQGVj+z9Y0uMyGEVM1QFv2nA4BZ42kZYBjg7GcJA7ifKxlmBwtFOj+aH5FRov3/mrQ/uTs+qqKWdwJbSXSpUGgBg2JiADMGmgiNMoaiCjvAMYN7N4DR3yCWtk4An3UKGNx/y8iqbApDCyOEPpoBMgCIAMRlCLmqx937O6bL2PoHAMQSER2A1cCtALaqB2pEepyApxDSGKudy5KW3ZEbsb9I2JzOP9CQkdUSHHo88ndV/kjbjjZM7QBAVEpH5BB2L0HxvpO6uycToYaxwqqrfYwQ/GgAZBkAHXyUilkAsBPAnZ8eRzcDRA1FqKGqGgAdGKCcfe7W6IxbFyIjuGWArwbAjiWA1QKYJUClRVT17wmyx6TuA6QSwlivVtSSt5IBspZApv4VYMhut9MUm82fNeQgamKlT2AHJmDa/58Q5bKoRaV85GQN01nVTq8ZdrWMT2Y7NUvfUYpmOpRVMbNLgPvk0HaB8N9GIQBgrHmsnUC9V1AhVe9QM+GTQWwHuk/G7ASAUwiMso/Frc55ti8rRbukdIUW49bDO1syJ52s5zvtBBkdnXEJc3n8ZJxKd2gZjvJCJ4RdhxO7ny1UB1jI7lVktKvVBID7M6KXZ2agegAU5/ZYS6NKy2EAinpFhwFwtaHS8Tx8BYVWMkCmfAoAUcvcAOAcGSDNAOya0l0GUAOg2wSRyADoGl2lBbBaDKsFqMp3RgiBtYBJDzBUOGdwRM08SQ11RzFDragyp8+q/XPXXkNmjWddv9H2q3weYLdv5RqGorgSAAphk9EgmN/QDis7pGhmADowgKNdDgBKloDTAHA3gLSlDFAFVTaEdgBwRPDYAYBIfAFV/b4OACszsUwPfXH79c4lJPJ3No4ha4eYNCks5KctgQoG2VGe62ygO/x9m4MhJwOgU/3bSPcuGlkJYKzbNSJDKCyRq/orGUDhEMK2X45o5e6h40qUqCFLZVi5c9hAGQIVwiUnm5S2etbS2G27NjtBjgNAd3+ADI1WAVhpR2jJAMp4+/ILETZbNpkgV676Pj4KqrsDxlhTqIae3kbVLqQiVM4AoKB9yvgHEAtl9Pg7IYf1CDpBCHVrKa4JcusPyOjprB5dHeEjE2kUuQtBMbgKaycUIkalpqF+car6oepYB38Bpan742aQwpTKUBEV4+bFOYREwaE8/tYOANICQTWMua+Aya8OUVPpUBJpuxwAY0f4skamhYiFQKgon4kssqP9qlvXIlfmWGQUdxy8Drdydb43UPF9iqFUARSq7uZVDPCO+rmMRXT7uriFu9532G1zA4AScndZwqreV99uXs0AIS1FeXNnN1Nutn0ONa0aAKm6dJvBivcd2tceAN++nz379cZOUsTjZ+wAjB4dNRPLKBboe5UhyjIBspssJ9oZdngUOWWg5ThlpFiXX7rTr727EJpZ45HxSVsCszOdZYAnPTOBNhnvYlgFzOjZA4D1M3O9ffR0kYUB2Pg5J8QedgepYo6H2UPgqKJtO2/lcp8rUKzhqihrar9+9j7Fx6i+32wnCLcr4vTJ2BGctnbkwqrsUoiApMu1dI+ZzRkde4etIbP+M8feIsG+Q3IAUgFnnEFlfjbG0N1ZfZaKFQClJ0HH3b5IA9FLn6LAiAi/jsul2Chuod8xbt8d9GingJRlAIbmmWjo8PdP2u9HLWkKlzFUb8/aUhSxlikZwHXyxxkPX6kKOrUAR4CKSZM8a+En6vj071UoVsSmwLy/+7aKJSJtQ5mCLZ86Hp4Vwq6ullvR5QCgIQC6M0BGzUIGALkXMTNA70Vylb+VAaKz/wQGyBxDYxiAmQhfxwBqv3x2BroZQFE/pv6wHeB0GYCdQWz5bhmFZrhv1wIGABfffYoMMAAIfFexr64QsroChFHjOuQfAAwAngGAT8sQAoArQZeR3DP1QxL6/WEAc9vdfSOthDJVl8/OcPcMbcUAbhR3ZoDqNbq6fgOAAcAA4NEAqN5OdSNX8X1mYNA1mP19+PsDgAFAercqe0AiOgDMKaHs9xEtYxjgoBk4DHDz/bc5RfVslgHeG9NOO4obMDIpfIcaUrkbiNZvADAAGAAMAL4EADv3H7p9P3P6KfItpp4/z9Gy6X5FNngiM+DTrGGtYKtndDewml2Y42Oh32Z8+7LP2Q5EZml07z/j+etoT+Tvn9ryaQCvmCANAGSbNItsZoYgeTPfyLAH4iIeUV9X/4+8vxufMABWa0u2s1UM0AUA0TwIY0YAcMcExzIASueIiTiaXykDqJbINjIAItxEOigqaDImWqaMaN0ikwgRAFEtJAMWuf19pxp3qhp6TMrQDPO7O5TvbpvL5tBmEmYMIUwnRgd/9XsUhBHBawcIUAPTbqBCAtaqgghDICCMlKkqVwkABcvCS1hXBkBmUHfffRQALfYAdsgAChBllwAlAO6kcAQAqC/CkVKwgyLZfQZlu3awk7yNTi8eJQBO0KJGvQSXiOk8X/oDXNgvHSIAAXwAAAAASUVORK5CYII=");
+			const value = "\u00c0\u00c1\u00c2\u00c8\u00ca\u00cb\u00cd\u00d3\u00d4\u00d5\u00da\u00df\u00e3\u00f5\u011f\u0130\u0131\u0152\u0153\u015e\u015f\u0174\u0175\u017e\u0207\0\0\0\0\0\0\0 !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~\0\u00c7\u00fc\u00e9\u00e2\u00e4\u00e0\u00e5\u00e7\u00ea\u00eb\u00e8\u00ef\u00ee\u00ec\u00c4\u00c5\u00c9\u00e6\u00c6\u00f4\u00f6\u00f2\u00fb\u00f9\u00ff\u00d6\u00dc\u00f8\u00a3\u00d8\u00d7\u0192\u00e1\u00ed\u00f3\u00fa\u00f1\u00d1\u00aa\u00ba\u00bf\u00ae\u00ac\u00bd\u00bc\u00a1\u00ab\u00bb\u2591\u2592\u2593\u2502\u2524\u2561\u2562\u2556\u2555\u2563\u2551\u2557\u255d\u255c\u255b\u2510\u2514\u2534\u252c\u251c\u2500\u253c\u255e\u255f\u255a\u2554\u2569\u2566\u2560\u2550\u256c\u2567\u2568\u2564\u2565\u2559\u2558\u2552\u2553\u256b\u256a\u2518\u250c\u2588\u2584\u258c\u2590\u2580\u03b1\u03b2\u0393\u03c0\u03a3\u03c3\u03bc\u03c4\u03a6\u0398\u03a9\u03b4\u221e\u2205\u2208\u2229\u2261\u00b1\u2265\u2264\u2320\u2321\u00f7\u2248\u00b0\u2219\u00b7\u221a\u207f\u00b2\u25a0\0";
+			altcanvas.width = 256;
+			altcanvas.height = 256;
+			altctx.fillStyle = "#fff";
+			altctx.textBaseline = "top";
+			btn_preview.onclick = btn_download.onclick = function (e) {
+				ctx.clearRect(0,0,4096,4096);
+				altctx.font = in_height.value + "px " + in_font.value + ", " + in_altfont.value;
+				var ascent = in_ascent.value;
+				var i=0;
+				var init = setInterval(function () {
+					if (value[i] != "\0") {altctx.fillText(value[i],0,Number(ascent))};
+					var img = altctx.getImageData(0,0,256,256);
+					for (var j=3;j<img.data.length;j+=4) {
+						img.data[j-3] = img.data[j-2] = img.data[j-1] = img.data[j] = Math.round(img.data[j]/255)*255;
+					}
+					ctx.putImageData(img,i*256%4096,Math.floor(i/16)*256);
+					altctx.clearRect(0,0,256,256);
+					i++;
+					if (i>=value.length) {
+						clearInterval(init);
+						if (e.target.id == "download") {
+							var uri = canvas.toDataURL("image/png");
+							var link = document.createElement('a');
+							link.setAttribute("download", "ascii.png");
+							link.setAttribute("href", uri);
+							document.body.appendChild(link);
+							link.click();
+							body.removeChild(body.lastChild);
+						}
+					}
+				},1);
+			}
+		</script>
+	</body>
+</html>
